@@ -22,7 +22,10 @@ public class EventDetails
 
 public enum EventType
 {
-    NodeClicked
+    NodeClicked,
+    EditorMarkerEnter,
+    EditorMarkerExit,
+    EditorMarkerClick
 }
 
 public class EventManager : MonoBehaviour

@@ -117,7 +117,7 @@ public class GameController : MonoBehaviour
 
     bool IsValidFirstNode(Node node)
     {
-        return (node.color == GameColor.Neutral || node.color == currentPlayer);
+        return (node.color == currentPlayer);
     }
 
     void ChooseSecondNode(Node node)
