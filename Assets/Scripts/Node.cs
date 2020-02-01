@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Node : MonoBehaviour
 {
+    public NodeVisual visual;
+
     public Vector2Int gridCoordinates;
     public bool isAlive;
     public List<Connection> connections;
@@ -18,33 +20,38 @@ public class Node : MonoBehaviour
     {
         this.color = color;
 
+        visual.SetColor(color);
         // placeholder graphics code, replace this with something cooler
-        var renderer = GetComponentInChildren<Renderer>();
+        //var renderer = GetComponentInChildren<Renderer>();
         
-        switch (color)
-        {
-            case GameColor.Neutral:
-                renderer.material = Resources.Load("grey") as Material;
-                break;
-            case GameColor.Red:
-                renderer.material = Resources.Load("red") as Material;
-                break;
-            case GameColor.Blue:
-                renderer.material = Resources.Load("blue") as Material;
-                break;
-        }
+        //switch (color)
+        //{
+        //    case GameColor.Neutral:
+        //        renderer.material = Resources.Load("grey") as Material;
+        //        break;
+        //    case GameColor.Red:
+        //        renderer.material = Resources.Load("red") as Material;
+        //        break;
+        //    case GameColor.Blue:
+        //        renderer.material = Resources.Load("blue") as Material;
+        //        break;
+        //}
     }
 
     public void Select()
     {
-        var currentScale = transform.localScale;
-        transform.localScale = currentScale * 2;
+        //var currentScale = transform.localScale;
+        //transform.localScale = currentScale * 2;
+
+        visual.Select();
     }
 
     public void Deselect()
     {
-        var currentScale = transform.localScale;
-        transform.localScale = currentScale * 0.5f;
+        //var currentScale = transform.localScale;
+        //transform.localScale = currentScale * 0.5f;
+
+        visual.Deselect();
     }
 }
 

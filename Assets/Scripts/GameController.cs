@@ -24,6 +24,12 @@ public class GameController : MonoBehaviour
     public Connection connectionPrefab;
     public Signal signalPrefab;
     public Goal goalPrefab;
+
+    public NodeVisual nodeVisualPrefab;
+    public ConnectionVisual connectionVisualPrefab;
+    public SignalVisual signalVisualPrefab;
+    public GoalVisual goalVisualPrefab;
+
     public int maxConnectionHealth;
 
     private Transform nodeHolder;
@@ -300,7 +306,7 @@ public class GameController : MonoBehaviour
             }
             else
             {
-                connection.SetAppearance((float)connection.health / (float)maxConnectionHealth);
+                connection.SetHealthPercentage((float)connection.health / (float)maxConnectionHealth);
             }
         }
 

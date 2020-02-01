@@ -4,12 +4,22 @@ using UnityEngine;
 
 public class Goal : MonoBehaviour
 {
+    public GoalVisual visual;
+
     public Vector2Int gridCoordinates;
     public GameColor color;
 
     public void Achieve()
     {
-        StartCoroutine(AchieveAnimation());
+        //StartCoroutine(AchieveAnimation());
+
+        visual.Achieve();
+    }
+
+    public void SetColor(GameColor color)
+    {
+        this.color = color;
+        visual.SetColor(color);
     }
 
     IEnumerator AchieveAnimation()
