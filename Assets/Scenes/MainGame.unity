@@ -224,6 +224,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d75d3ec30d108b24d9d45d0d7dcd3a1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCamera: {fileID: 519420028}
   nodePrefab: {fileID: 899832373975481722, guid: c4903ab10d7681942be793339a56654b,
     type: 3}
   connectionPrefab: {fileID: 1802702678106643626, guid: 52c3fc0a70524cb45b3df3d37ca964f9,
@@ -232,6 +233,10 @@ MonoBehaviour:
     type: 3}
   goalPrefab: {fileID: 9017426388501971955, guid: 2f624328c184f0e4b8bed53662ee4083,
     type: 3}
+  nodeVisualPrefab: {fileID: 0}
+  connectionVisualPrefab: {fileID: 0}
+  signalVisualPrefab: {fileID: 0}
+  goalVisualPrefab: {fileID: 0}
   maxConnectionHealth: 8
 --- !u!4 &935538931
 Transform:

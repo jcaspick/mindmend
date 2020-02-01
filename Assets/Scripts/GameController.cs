@@ -25,6 +25,8 @@ public class GameController : MonoBehaviour
     public static bool USE_PLACEHOLDER_SIGNAL = true;
     public static bool USE_PLACEHOLDER_GOAL = true;
 
+    public GameObject mainCamera;
+
     public Node nodePrefab;
     public Connection connectionPrefab;
     public Signal signalPrefab;
@@ -101,7 +103,7 @@ public class GameController : MonoBehaviour
             }
         }
 
-        nodeHolder.transform.position = new Vector3(-4, -4, 0);
+        mainCamera.transform.position = new Vector3(3.5f, 3.5f, -10);
     }
 
     void HandleNodeClicked(EventDetails details)
