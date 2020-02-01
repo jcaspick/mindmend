@@ -6,12 +6,31 @@ public class Board
 {
     public int width;
     public int height;
-    private Node[] nodes;
+    public Vector2Int redSignalStart;
+    public Vector2Int blueSignalStart;
+    public List<Vector2Int> redGoals;
+    public List<Vector2Int> blueGoals;
+    public bool[] arrangement;
 
     public Board(int width, int height)
     {
         this.width = width;
         this.height = height;
-        nodes = new Node[width * height];
+        arrangement = new bool[width * height];
+    }
+
+    public void AddNode(Vector2Int coordinates)
+    {
+        arrangement[coordinates.y * width + coordinates.x] = true;
+    }
+
+    public void RemoveNode(Vector2Int coordinates)
+    {
+        arrangement[coordinates.y * width + coordinates.x] = false;
+    }
+
+    public bool HasNode(Vector2Int coordinates)
+    {
+        return arrangement[coordinates.y * width + coordinates.x];
     }
 }

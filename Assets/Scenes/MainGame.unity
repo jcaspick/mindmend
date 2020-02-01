@@ -225,6 +225,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 519420028}
+  clickableSpacePrefab: {fileID: 6869279577967417894, guid: 15a6637240a4955429eca7403911ae9d,
+    type: 3}
   nodePrefab: {fileID: 899832373975481722, guid: c4903ab10d7681942be793339a56654b,
     type: 3}
   connectionPrefab: {fileID: 1802702678106643626, guid: 52c3fc0a70524cb45b3df3d37ca964f9,

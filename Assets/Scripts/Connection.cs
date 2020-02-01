@@ -17,6 +17,7 @@ public class Connection : MonoBehaviour
         {
             visual = Instantiate(prefab);
             visual.Create(a.transform.position, b.transform.position, angle);
+            GetComponentInChildren<Renderer>().enabled = false;
         }
     }
 

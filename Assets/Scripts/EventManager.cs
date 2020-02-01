@@ -7,6 +7,7 @@ public class EventDetails
 {
     public Vector2Int coordinates;
     public Node node;
+    public Tool tool;
 
     public EventDetails(Vector2Int coordinates)
     {
@@ -18,6 +19,11 @@ public class EventDetails
         this.node = node;
         this.coordinates = node.gridCoordinates;
     }
+
+    public EventDetails(Tool tool)
+    {
+        this.tool = tool;
+    }
 }
 
 public enum EventType
@@ -25,7 +31,8 @@ public enum EventType
     SpaceClicked,
     EditorMarkerEnter,
     EditorMarkerExit,
-    EditorMarkerClick
+    EditorMarkerClick,
+    EditorToolChange
 }
 
 public class EventManager : MonoBehaviour

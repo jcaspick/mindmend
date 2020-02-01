@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 public enum GamePhase
 {
@@ -43,6 +44,7 @@ public class GameController : MonoBehaviour
     private Transform nodeHolder;
     private Transform clickableHolder;
 
+    private Board board;
     private List<Node> nodes;
     private Signal redSignal;
     private Signal blueSignal;
@@ -57,6 +59,10 @@ public class GameController : MonoBehaviour
     {
         EventManager.AddListener(EventType.SpaceClicked, HandleSpaceClicked);
 
+        // load the level
+        var boardPath = Path.Combine(Application.dataPath, "Levels", "level.json");
+        board = BoardUtility.LoadFromJson(boardPath);
+
         // initialize some stuff
         nodes = new List<Node>();
         connections = new List<Connection>();
@@ -67,15 +73,15 @@ public class GameController : MonoBehaviour
 
         // create the red and blue signals
         redSignal = Instantiate(signalPrefab);
-        redSignal.gridCoordinates = new Vector2Int(3, 3);
-        redSignal.transform.position = new Vector3(3, 3, 0);
+        redSignal.gridCoordinates = board.redSignalStart;
+        redSignal.transform.position = new Vector3(board.redSignalStart.x, board.redSignalStart.y, 0);
         redSignal.transform.SetParent(nodeHolder);
         redSignal.CreateVisuals(signalVisualPrefab);
         redSignal.SetColor(GameColor.Red);
 
         blueSignal = Instantiate(signalPrefab);
-        blueSignal.gridCoordinates = new Vector2Int(0, 6);
-        blueSignal.transform.position = new Vector3(0, 6, 0);
+        blueSignal.gridCoordinates = board.blueSignalStart;
+        blueSignal.transform.position = new Vector3(board.blueSignalStart.x, board.blueSignalStart.y, 0);
         blueSignal.transform.SetParent(nodeHolder);
         blueSignal.CreateVisuals(signalVisualPrefab);
         blueSignal.SetColor(GameColor.Blue);
@@ -86,13 +92,16 @@ public class GameController : MonoBehaviour
         //goal.transform.SetParent(nodeHolder);
         //goals.Add(goal);
 
-        int width = 8;
-        int height = 8;
+        int width = board.width;
+        int height = board.height;
 
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
+                if (!board.HasNode(new Vector2Int(x, y)))
+                    continue;
+
                 // create clickable space
                 var clickableSpace = Instantiate(clickableSpacePrefab);
                 clickableSpace.transform.position = new Vector3(x, y, -4);
@@ -117,7 +126,7 @@ public class GameController : MonoBehaviour
             }
         }
 
-        mainCamera.transform.position = new Vector3(3.5f, 3.5f, -10);
+        mainCamera.transform.position = new Vector3(((float)width - 1) * 0.5f, ((float)height - 1) * 0.5f, -10);
     }
 
     void HandleSpaceClicked(EventDetails details)
