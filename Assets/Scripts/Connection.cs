@@ -11,6 +11,15 @@ public class Connection : MonoBehaviour
 
     public ConnectionVisual visual;
 
+    public void CreateVisuals(ConnectionVisual prefab, float angle)
+    {
+        if (!GameController.USE_PLACEHOLDER_CONNECTION)
+        {
+            visual = Instantiate(prefab);
+            visual.Create(a.transform.position, b.transform.position, angle);
+        }
+    }
+
     public void SetHealthPercentage(float health)
     {
         if (GameController.USE_PLACEHOLDER_CONNECTION)

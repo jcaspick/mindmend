@@ -9,6 +9,15 @@ public class Goal : MonoBehaviour
     public Vector2Int gridCoordinates;
     public GameColor color;
 
+    public void CreateVisuals(GoalVisual prefab)
+    {
+        if (!GameController.USE_PLACEHOLDER_GOAL)
+        {
+            visual = Instantiate(prefab);
+            visual.transform.position = new Vector3(gridCoordinates.x, gridCoordinates.y, 0);
+        }
+    }
+
     public void Achieve()
     {
         if (GameController.USE_PLACEHOLDER_GOAL)

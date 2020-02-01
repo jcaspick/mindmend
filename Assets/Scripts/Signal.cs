@@ -9,6 +9,15 @@ public class Signal : MonoBehaviour
 
     public SignalVisual visual;
 
+    public void CreateVisuals(SignalVisual prefab)
+    {
+        if (!GameController.USE_PLACEHOLDER_SIGNAL)
+        {
+            visual = Instantiate(prefab);
+            visual.transform.position = new Vector3(gridCoordinates.x, gridCoordinates.y, 0);
+        }
+    }
+
     public void SetColor(GameColor color)
     {
         this.color = color;

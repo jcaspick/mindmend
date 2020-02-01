@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ConnectionVisual : MonoBehaviour
 {
-    public void Create()
+    public void Create(Vector3 startNode, Vector3 endNode, float angle)
     {
 
     }

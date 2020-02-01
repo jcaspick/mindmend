@@ -16,6 +16,15 @@ public class Node : MonoBehaviour
         EventManager.Invoke(EventType.NodeClicked, new EventDetails(this));
     }
 
+    public void CreateVisuals(NodeVisual prefab)
+    {
+        if (!GameController.USE_PLACEHOLDER_NODE)
+        {
+            visual = Instantiate(prefab);
+            visual.transform.position = new Vector3(gridCoordinates.x, gridCoordinates.y, 0);
+        }
+    }
+
     public void SetColor(GameColor color)
     {
         this.color = color;

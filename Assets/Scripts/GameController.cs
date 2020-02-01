@@ -64,11 +64,14 @@ public class GameController : MonoBehaviour
         redSignal.gridCoordinates = new Vector2Int(3, 3);
         redSignal.transform.position = new Vector3(3, 3, 0);
         redSignal.transform.SetParent(nodeHolder);
+        redSignal.CreateVisuals(signalVisualPrefab);
         redSignal.SetColor(GameColor.Red);
+
         blueSignal = Instantiate(signalPrefab);
         blueSignal.gridCoordinates = new Vector2Int(0, 6);
         blueSignal.transform.position = new Vector3(0, 6, 0);
         blueSignal.transform.SetParent(nodeHolder);
+        blueSignal.CreateVisuals(signalVisualPrefab);
         blueSignal.SetColor(GameColor.Blue);
 
         //var goal = Instantiate(goalPrefab);
@@ -85,6 +88,7 @@ public class GameController : MonoBehaviour
                 node.transform.position = new Vector3(x, y, 0);
                 node.gridCoordinates = new Vector2Int(x, y);
                 node.transform.SetParent(nodeHolder);
+                node.CreateVisuals(nodeVisualPrefab);
 
                 if (node.gridCoordinates == blueSignal.gridCoordinates)
                     node.SetColor(GameColor.Blue);
@@ -146,14 +150,17 @@ public class GameController : MonoBehaviour
             secondClicked.gridCoordinates.x - firstClicked.gridCoordinates.x);
         connection.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
+        connection.a = firstClicked;
+        connection.b = secondClicked;
+        connection.health = maxConnectionHealth;
+
+        connection.CreateVisuals(connectionVisualPrefab, angle);
+
         if (firstClicked.IsDiagonal(secondClicked))
         {
             connection.transform.localScale = new Vector3(1.414f, 1.0f, 1.0f);
         }
 
-        connection.a = firstClicked;
-        connection.b = secondClicked;
-        connection.health = maxConnectionHealth;
         connection.SetColor(currentPlayer);
 
         connections.Add(connection);
