@@ -20,38 +20,51 @@ public class Node : MonoBehaviour
     {
         this.color = color;
 
-        visual.SetColor(color);
-        // placeholder graphics code, replace this with something cooler
-        //var renderer = GetComponentInChildren<Renderer>();
-        
-        //switch (color)
-        //{
-        //    case GameColor.Neutral:
-        //        renderer.material = Resources.Load("grey") as Material;
-        //        break;
-        //    case GameColor.Red:
-        //        renderer.material = Resources.Load("red") as Material;
-        //        break;
-        //    case GameColor.Blue:
-        //        renderer.material = Resources.Load("blue") as Material;
-        //        break;
-        //}
+        if (GameController.USE_PLACEHOLDER_NODE)
+        {
+           var renderer = GetComponentInChildren<Renderer>();
+
+            switch (color)
+            {
+                case GameColor.Neutral:
+                    renderer.material = Resources.Load("grey") as Material;
+                    break;
+                case GameColor.Red:
+                    renderer.material = Resources.Load("red") as Material;
+                    break;
+                case GameColor.Blue:
+                    renderer.material = Resources.Load("blue") as Material;
+                    break;
+            }
+        }
+        else
+        {
+            visual.SetColor(color);
+        }
     }
 
     public void Select()
     {
-        //var currentScale = transform.localScale;
-        //transform.localScale = currentScale * 2;
-
-        visual.Select();
+        if (GameController.USE_PLACEHOLDER_NODE)
+        {
+            var currentScale = transform.localScale;
+            transform.localScale = currentScale * 2;
+        } else
+        {
+            visual.Select();
+        }
     }
 
     public void Deselect()
     {
-        //var currentScale = transform.localScale;
-        //transform.localScale = currentScale * 0.5f;
-
-        visual.Deselect();
+        if (GameController.USE_PLACEHOLDER_NODE)
+        {
+            var currentScale = transform.localScale;
+            transform.localScale = currentScale * 0.5f;
+        } else
+        {
+            visual.Deselect();
+        }
     }
 }
 

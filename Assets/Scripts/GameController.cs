@@ -20,6 +20,11 @@ public enum GameColor
 
 public class GameController : MonoBehaviour
 {
+    public static bool USE_PLACEHOLDER_NODE = true;
+    public static bool USE_PLACEHOLDER_CONNECTION = true;
+    public static bool USE_PLACEHOLDER_SIGNAL = true;
+    public static bool USE_PLACEHOLDER_GOAL = true;
+
     public Node nodePrefab;
     public Connection connectionPrefab;
     public Signal signalPrefab;
@@ -45,8 +50,6 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("start");
-
         EventManager.AddListener(EventType.NodeClicked, HandleNodeClicked);
 
         // initialize some stuff

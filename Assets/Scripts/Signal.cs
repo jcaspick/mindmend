@@ -13,21 +13,25 @@ public class Signal : MonoBehaviour
     {
         this.color = color;
 
-        visual.SetColor(color);
-        // placeholder graphics code, replace this with something cooler
-        //var renderer = GetComponentInChildren<Renderer>();
+        if (GameController.USE_PLACEHOLDER_SIGNAL)
+        {
+            var renderer = GetComponentInChildren<Renderer>();
 
-        //switch (color)
-        //{
-        //    case GameColor.Neutral:
-        //        renderer.material = Resources.Load("grey") as Material;
-        //        break;
-        //    case GameColor.Red:
-        //        renderer.material = Resources.Load("red") as Material;
-        //        break;
-        //    case GameColor.Blue:
-        //        renderer.material = Resources.Load("blue") as Material;
-        //        break;
-        //}
+            switch (color)
+            {
+                case GameColor.Neutral:
+                    renderer.material = Resources.Load("grey") as Material;
+                    break;
+                case GameColor.Red:
+                    renderer.material = Resources.Load("red") as Material;
+                    break;
+                case GameColor.Blue:
+                    renderer.material = Resources.Load("blue") as Material;
+                    break;
+            }
+        } else
+        {
+            visual.SetColor(color);
+        }
     }
 }

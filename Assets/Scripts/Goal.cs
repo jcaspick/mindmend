@@ -11,9 +11,13 @@ public class Goal : MonoBehaviour
 
     public void Achieve()
     {
-        //StartCoroutine(AchieveAnimation());
-
-        visual.Achieve();
+        if (GameController.USE_PLACEHOLDER_GOAL)
+        {
+            StartCoroutine(AchieveAnimation());
+        } else
+        {
+            visual.Achieve();
+        }
     }
 
     public void SetColor(GameColor color)
