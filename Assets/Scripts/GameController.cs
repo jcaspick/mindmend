@@ -26,6 +26,7 @@ public class GameController : MonoBehaviour
     public static bool USE_PLACEHOLDER_GOAL = true;
 
     public GameObject mainCamera;
+    public ClickableSpace clickableSpacePrefab;
 
     public Node nodePrefab;
     public Connection connectionPrefab;
@@ -40,6 +41,8 @@ public class GameController : MonoBehaviour
     public int maxConnectionHealth;
 
     private Transform nodeHolder;
+    private Transform clickableHolder;
+
     private List<Node> nodes;
     private Signal redSignal;
     private Signal blueSignal;
@@ -52,13 +55,14 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
-        EventManager.AddListener(EventType.NodeClicked, HandleNodeClicked);
+        EventManager.AddListener(EventType.SpaceClicked, HandleSpaceClicked);
 
         // initialize some stuff
         nodes = new List<Node>();
         connections = new List<Connection>();
         goals = new List<Goal>();
         nodeHolder = new GameObject("nodes").transform;
+        clickableHolder = new GameObject("clickable spaces").transform;
         phase = GamePhase.SelectStart;
 
         // create the red and blue signals
@@ -82,10 +86,20 @@ public class GameController : MonoBehaviour
         //goal.transform.SetParent(nodeHolder);
         //goals.Add(goal);
 
-        for (int x = 0; x < 8; x++)
+        int width = 8;
+        int height = 8;
+
+        for (int x = 0; x < width; x++)
         {
-            for (int y = 0; y < 8; y++)
+            for (int y = 0; y < height; y++)
             {
+                // create clickable space
+                var clickableSpace = Instantiate(clickableSpacePrefab);
+                clickableSpace.transform.position = new Vector3(x, y, -4);
+                clickableSpace.gridCoordinates = new Vector2Int(x, y);
+                clickableSpace.transform.SetParent(clickableHolder);
+
+                // create node
                 var node = Instantiate(nodePrefab);
                 node.transform.position = new Vector3(x, y, 0);
                 node.gridCoordinates = new Vector2Int(x, y);
@@ -106,15 +120,15 @@ public class GameController : MonoBehaviour
         mainCamera.transform.position = new Vector3(3.5f, 3.5f, -10);
     }
 
-    void HandleNodeClicked(EventDetails details)
+    void HandleSpaceClicked(EventDetails details)
     {
         switch (phase)
         {
             case GamePhase.SelectStart:
-                ChooseFirstNode(details.node);
+                ChooseFirstNode(GetNodeAtCoordinates(details.coordinates));
                 break;
             case GamePhase.SelectEnd:
-                ChooseSecondNode(details.node);
+                ChooseSecondNode(GetNodeAtCoordinates(details.coordinates));
                 break;
         }
     }

@@ -22,7 +22,7 @@ public class EventDetails
 
 public enum EventType
 {
-    NodeClicked,
+    SpaceClicked,
     EditorMarkerEnter,
     EditorMarkerExit,
     EditorMarkerClick
