@@ -11,6 +11,13 @@ public enum GamePhase
     ConnectionsDecay
 }
 
+public enum GameColor
+{
+    Neutral,
+    Red,
+    Blue
+}
+
 public class GameController : MonoBehaviour
 {
     public Node nodePrefab;
@@ -21,10 +28,12 @@ public class GameController : MonoBehaviour
 
     private Transform nodeHolder;
     private List<Node> nodes;
-    private List<Signal> signals;
+    private Signal redSignal;
+    private Signal blueSignal;
     private List<Connection> connections;
     private List<Goal> goals;
     private GamePhase phase;
+    private GameColor currentPlayer = GameColor.Red;
     private Node firstClicked;
     private Node secondClicked;
 
@@ -34,24 +43,30 @@ public class GameController : MonoBehaviour
 
         EventManager.AddListener(EventType.NodeClicked, HandleNodeClicked);
 
+        // initialize some stuff
         nodes = new List<Node>();
-        signals = new List<Signal>();
         connections = new List<Connection>();
         goals = new List<Goal>();
         nodeHolder = new GameObject("nodes").transform;
         phase = GamePhase.SelectStart;
 
-        var signal = Instantiate(signalPrefab);
-        signal.gridCoordinates = new Vector2Int(3, 3);
-        signal.transform.position = new Vector3(3, 3, 0);
-        signal.transform.SetParent(nodeHolder);
-        signals.Add(signal);
+        // create the red and blue signals
+        redSignal = Instantiate(signalPrefab);
+        redSignal.gridCoordinates = new Vector2Int(3, 3);
+        redSignal.transform.position = new Vector3(3, 3, 0);
+        redSignal.transform.SetParent(nodeHolder);
+        redSignal.SetColor(GameColor.Red);
+        blueSignal = Instantiate(signalPrefab);
+        blueSignal.gridCoordinates = new Vector2Int(0, 6);
+        blueSignal.transform.position = new Vector3(0, 6, 0);
+        blueSignal.transform.SetParent(nodeHolder);
+        blueSignal.SetColor(GameColor.Blue);
 
-        var goal = Instantiate(goalPrefab);
-        goal.gridCoordinates = new Vector2Int(7, 7);
-        goal.transform.position = new Vector3(7, 7, 0);
-        goal.transform.SetParent(nodeHolder);
-        goals.Add(goal);
+        //var goal = Instantiate(goalPrefab);
+        //goal.gridCoordinates = new Vector2Int(7, 7);
+        //goal.transform.position = new Vector3(7, 7, 0);
+        //goal.transform.SetParent(nodeHolder);
+        //goals.Add(goal);
 
         for (int x = 0; x < 8; x++)
         {
@@ -61,6 +76,14 @@ public class GameController : MonoBehaviour
                 node.transform.position = new Vector3(x, y, 0);
                 node.gridCoordinates = new Vector2Int(x, y);
                 node.transform.SetParent(nodeHolder);
+
+                if (node.gridCoordinates == blueSignal.gridCoordinates)
+                    node.SetColor(GameColor.Blue);
+                else if (node.gridCoordinates == redSignal.gridCoordinates)
+                    node.SetColor(GameColor.Red);
+                else
+                    node.SetColor(GameColor.Neutral);
+
                 nodes.Add(node);
             }
         }
@@ -83,14 +106,23 @@ public class GameController : MonoBehaviour
 
     void ChooseFirstNode(Node node)
     {
-        firstClicked = node;
-        node.Select();
-        phase = GamePhase.SelectEnd;
+        if (IsValidFirstNode(node))
+        {
+            firstClicked = node;
+            node.SetColor(currentPlayer);
+            node.Select();
+            phase = GamePhase.SelectEnd;
+        }
+    }
+
+    bool IsValidFirstNode(Node node)
+    {
+        return (node.color == GameColor.Neutral || node.color == currentPlayer);
     }
 
     void ChooseSecondNode(Node node)
     {
-        if (node != firstClicked && node.IsNeighbor(firstClicked))
+        if (IsValidSecondNode(node))
         {
             secondClicked = node;
             firstClicked.Deselect();
@@ -104,6 +136,7 @@ public class GameController : MonoBehaviour
         float angle = Mathf.Rad2Deg * Mathf.Atan2(secondClicked.gridCoordinates.y - firstClicked.gridCoordinates.y,
             secondClicked.gridCoordinates.x - firstClicked.gridCoordinates.x);
         connection.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
         if (firstClicked.IsDiagonal(secondClicked))
         {
             connection.transform.localScale = new Vector3(1.414f, 1.0f, 1.0f);
@@ -112,13 +145,31 @@ public class GameController : MonoBehaviour
         connection.a = firstClicked;
         connection.b = secondClicked;
         connection.health = maxConnectionHealth;
+        connection.SetColor(currentPlayer);
 
         connections.Add(connection);
         firstClicked.connections.Add(connection);
         secondClicked.connections.Add(connection);
+        firstClicked.SetColor(currentPlayer);
+        secondClicked.SetColor(currentPlayer);
 
         phase = GamePhase.SignalsMove;
-        StartCoroutine(HandleSignalsMove());
+        StartCoroutine(HandleSignalMovement(currentPlayer));
+    }
+
+    bool IsValidSecondNode(Node node)
+    {
+        if (node == firstClicked)
+            return false;
+        if (!node.IsNeighbor(firstClicked))
+            return false;
+        if (node.color == currentPlayer || node.color == GameColor.Neutral)
+        {
+            return true;
+        } else
+        {
+            return false;
+        }
     }
 
     Node GetNodeAtCoordinates(Vector2Int coordinates)
@@ -132,11 +183,11 @@ public class GameController : MonoBehaviour
         return null;
     }
 
-    IEnumerator HandleSignalsMove()
+    IEnumerator HandleSignalMovement(GameColor color)
     {
         yield return null;
 
-        var signal = signals[0];
+        var signal = color == GameColor.Red ? redSignal : blueSignal;
         List<Node> visited = new List<Node>();
 
         while (true)
@@ -189,7 +240,7 @@ public class GameController : MonoBehaviour
         }
 
         phase = GamePhase.CheckWinConditions;
-        CheckWinConditions();
+        CheckWinConditions(currentPlayer);
     }
 
     IEnumerator TweenSignal(Signal signal, Node start, Node end)
@@ -210,9 +261,9 @@ public class GameController : MonoBehaviour
         signal.transform.position = end.transform.position;
     }
 
-    void CheckWinConditions()
+    void CheckWinConditions(GameColor color)
     {
-        var signal = signals[0];
+        var signal = color == GameColor.Red ? redSignal : blueSignal;
         for (int i = goals.Count - 1; i >= 0; i--)
         {
             var goal = goals[i];
@@ -225,19 +276,25 @@ public class GameController : MonoBehaviour
         }
 
         phase = GamePhase.ConnectionsDecay;
-        StartCoroutine(ConnectionsDecay());
+        StartCoroutine(ConnectionsDecay(currentPlayer));
     }
 
-    IEnumerator ConnectionsDecay()
+    IEnumerator ConnectionsDecay(GameColor color)
     {
         for (int i = connections.Count - 1; i >= 0; i--)
         {
             var connection = connections[i];
+            if (connection.color != color)
+                continue;
             connection.health--;
             if (connection.health <= 0)
             {
                 connection.a.connections.Remove(connection);
                 connection.b.connections.Remove(connection);
+                if (connection.a.connections.Count == 0)
+                    connection.a.SetColor(GameColor.Neutral);
+                if (connection.b.connections.Count == 0)
+                    connection.b.SetColor(GameColor.Neutral);
                 connections.Remove(connection);
                 Destroy(connection.gameObject);
             }
@@ -251,6 +308,7 @@ public class GameController : MonoBehaviour
 
         firstClicked = null;
         secondClicked = null;
+        currentPlayer = currentPlayer == GameColor.Red ? GameColor.Blue : GameColor.Red;
         phase = GamePhase.SelectStart;
     }
 }

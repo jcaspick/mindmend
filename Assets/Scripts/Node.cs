@@ -7,10 +7,32 @@ public class Node : MonoBehaviour
     public Vector2Int gridCoordinates;
     public bool isAlive;
     public List<Connection> connections;
+    public GameColor color;
 
     private void OnMouseUpAsButton()
     {
         EventManager.Invoke(EventType.NodeClicked, new EventDetails(this));
+    }
+
+    public void SetColor(GameColor color)
+    {
+        this.color = color;
+
+        // placeholder graphics code, replace this with something cooler
+        var renderer = GetComponentInChildren<Renderer>();
+        
+        switch (color)
+        {
+            case GameColor.Neutral:
+                renderer.material = Resources.Load("grey") as Material;
+                break;
+            case GameColor.Red:
+                renderer.material = Resources.Load("red") as Material;
+                break;
+            case GameColor.Blue:
+                renderer.material = Resources.Load("blue") as Material;
+                break;
+        }
     }
 
     public void Select()

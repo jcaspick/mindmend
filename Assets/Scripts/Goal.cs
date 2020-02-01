@@ -5,6 +5,7 @@ using UnityEngine;
 public class Goal : MonoBehaviour
 {
     public Vector2Int gridCoordinates;
+    public GameColor color;
 
     public void Achieve()
     {
