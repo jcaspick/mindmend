@@ -9,6 +9,7 @@ public class EventDetails
     public Node node;
     public Tool tool;
     public int intData;
+    public GameColor color;
 
     public EventDetails(Vector2Int coordinates)
     {
@@ -26,6 +27,11 @@ public class EventDetails
         this.tool = tool;
         this.intData = intData;
     }
+
+    public EventDetails(GameColor color)
+    {
+        this.color = color;
+    }
 }
 
 public enum EventType
@@ -34,7 +40,8 @@ public enum EventType
     EditorMarkerEnter,
     EditorMarkerExit,
     EditorMarkerClick,
-    EditorToolChange
+    EditorToolChange,
+    PlayerChange
 }
 
 public class EventManager : MonoBehaviour

@@ -373,6 +373,7 @@ public class GameController : MonoBehaviour
         firstClicked = null;
         secondClicked = null;
         currentPlayer = currentPlayer == GameColor.Red ? GameColor.Blue : GameColor.Red;
+        EventManager.Invoke(EventType.PlayerChange, new EventDetails(currentPlayer));
         phase = GamePhase.SelectStart;
     }
 }
