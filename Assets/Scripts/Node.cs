@@ -13,7 +13,7 @@ public class Node : MonoBehaviour
 
     public void CreateVisuals(NodeVisual prefab)
     {
-        if (!GameController.USE_PLACEHOLDER_NODE)
+        if (!GameSettings.instance.USE_PLACEHOLDER_NODE)
         {
             visual = Instantiate(prefab);
             visual.transform.position = new Vector3(gridCoordinates.x, gridCoordinates.y, 0);
@@ -25,7 +25,7 @@ public class Node : MonoBehaviour
     {
         this.color = color;
 
-        if (GameController.USE_PLACEHOLDER_NODE)
+        if (GameSettings.instance.USE_PLACEHOLDER_NODE)
         {
            var renderer = GetComponentInChildren<Renderer>();
 
@@ -50,7 +50,7 @@ public class Node : MonoBehaviour
 
     public void Select()
     {
-        if (GameController.USE_PLACEHOLDER_NODE)
+        if (GameSettings.instance.USE_PLACEHOLDER_NODE)
         {
             var currentScale = transform.localScale;
             transform.localScale = currentScale * 2;
@@ -62,7 +62,7 @@ public class Node : MonoBehaviour
 
     public void Deselect()
     {
-        if (GameController.USE_PLACEHOLDER_NODE)
+        if (GameSettings.instance.USE_PLACEHOLDER_NODE)
         {
             var currentScale = transform.localScale;
             transform.localScale = currentScale * 0.5f;

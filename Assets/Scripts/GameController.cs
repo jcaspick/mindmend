@@ -23,11 +23,6 @@ public enum GameColor
 
 public class GameController : MonoBehaviour
 {
-    public static bool USE_PLACEHOLDER_NODE = true;
-    public static bool USE_PLACEHOLDER_CONNECTION = true;
-    public static bool USE_PLACEHOLDER_SIGNAL = true;
-    public static bool USE_PLACEHOLDER_GOAL = true;
-
     public GameObject mainCamera;
     public ClickableSpace clickableSpacePrefab;
 
@@ -383,6 +378,7 @@ public class GameController : MonoBehaviour
 
         if (nextRedGoal == 5 && nextBlueGoal == 5)
         {
+            yield return new WaitForSeconds(3.0f);
             yield return StartCoroutine(UI_Controller.instance.ShowFinalMemory());
         }
 

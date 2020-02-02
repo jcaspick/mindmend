@@ -11,7 +11,7 @@ public class Goal : MonoBehaviour
 
     public void CreateVisuals(GoalVisual prefab)
     {
-        if (!GameController.USE_PLACEHOLDER_GOAL)
+        if (!GameSettings.instance.USE_PLACEHOLDER_GOAL)
         {
             visual = Instantiate(prefab);
             visual.transform.position = new Vector3(gridCoordinates.x, gridCoordinates.y, 0);
@@ -24,7 +24,7 @@ public class Goal : MonoBehaviour
 
     public void Achieve()
     {
-        if (GameController.USE_PLACEHOLDER_GOAL)
+        if (GameSettings.instance.USE_PLACEHOLDER_GOAL)
         {
             StartCoroutine(AchieveAnimation());
         } else
@@ -36,7 +36,7 @@ public class Goal : MonoBehaviour
     public void SetColor(GameColor color)
     {
         this.color = color;
-        if (!GameController.USE_PLACEHOLDER_GOAL)
+        if (!GameSettings.instance.USE_PLACEHOLDER_GOAL)
         {
             visual.SetColor(color);
         } else

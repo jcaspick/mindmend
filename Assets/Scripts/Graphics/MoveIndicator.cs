@@ -15,7 +15,7 @@ public class MoveIndicator : MonoBehaviour
     }
 
     public void SetColor(GameColor color) {
-        if (GameController.USE_PLACEHOLDER_SIGNAL) {
+        if (GameSettings.instance.USE_PLACEHOLDER_SIGNAL) {
 
             switch (color) {
                 case GameColor.Neutral:

@@ -41,8 +41,7 @@ public class UI_Controller : MonoBehaviour
     public IEnumerator ShowFinalMemory()
     {
         StopAllCoroutines();
-
-        var sprite = finalMemory;
+        memoryImage.sprite = finalMemory;
 
         yield return StartCoroutine(MemoryFadeIn(2.5f));
         yield return new WaitForSeconds(5.0f);

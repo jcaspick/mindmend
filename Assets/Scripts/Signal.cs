@@ -11,7 +11,7 @@ public class Signal : MonoBehaviour
 
     public void CreateVisuals(SignalVisual prefab)
     {
-        if (!GameController.USE_PLACEHOLDER_SIGNAL)
+        if (!GameSettings.instance.USE_PLACEHOLDER_SIGNAL)
         {
             visual = Instantiate(prefab);
             visual.transform.position = new Vector3(gridCoordinates.x, gridCoordinates.y, 0);
@@ -21,7 +21,7 @@ public class Signal : MonoBehaviour
     }
 
     public void Update() {
-        if (!GameController.USE_PLACEHOLDER_SIGNAL)
+        if (!GameSettings.instance.USE_PLACEHOLDER_SIGNAL)
             visual.transform.position = gameObject.transform.position;
     }
 
@@ -29,7 +29,7 @@ public class Signal : MonoBehaviour
     {
         this.color = color;
 
-        if (GameController.USE_PLACEHOLDER_SIGNAL)
+        if (GameSettings.instance.USE_PLACEHOLDER_SIGNAL)
         {
             var renderer = GetComponentInChildren<Renderer>();
 

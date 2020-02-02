@@ -13,7 +13,7 @@ public class Connection : MonoBehaviour
 
     public void CreateVisuals(ConnectionVisual prefab, float angle)
     {
-        if (!GameController.USE_PLACEHOLDER_CONNECTION)
+        if (!GameSettings.instance.USE_PLACEHOLDER_CONNECTION)
         {
             visual = Instantiate(prefab);
             visual.Create(a, b, angle);
@@ -22,13 +22,13 @@ public class Connection : MonoBehaviour
     }
 
     public void Break() {
-        if (!GameController.USE_PLACEHOLDER_CONNECTION)
+        if (!GameSettings.instance.USE_PLACEHOLDER_CONNECTION)
             visual.Break();
     }
 
     public void SetHealthPercentage(float healthMetric)
     {
-        if (GameController.USE_PLACEHOLDER_CONNECTION)
+        if (GameSettings.instance.USE_PLACEHOLDER_CONNECTION)
         {
             float length = transform.localScale.x;
             transform.localScale = new Vector3(length, healthMetric, healthMetric);
@@ -42,7 +42,7 @@ public class Connection : MonoBehaviour
     {
         this.color = color;
 
-        if (GameController.USE_PLACEHOLDER_CONNECTION)
+        if (GameSettings.instance.USE_PLACEHOLDER_CONNECTION)
         {
             var renderer = GetComponentInChildren<Renderer>();
 
