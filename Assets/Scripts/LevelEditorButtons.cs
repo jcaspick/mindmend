@@ -24,6 +24,16 @@ public class LevelEditorButtons : MonoBehaviour
         EventManager.Invoke(EventType.EditorToolChange, new EventDetails(Tool.BlueSignal));
     }
 
+    public void RedGoal(int number)
+    {
+        EventManager.Invoke(EventType.EditorToolChange, new EventDetails(Tool.RedGoal, number));
+    }
+
+    public void BlueGoal(int number)
+    {
+        EventManager.Invoke(EventType.EditorToolChange, new EventDetails(Tool.BlueGoal, number));
+    }
+
     public void Save()
     {
         LevelEditor.instance.SaveBoard();

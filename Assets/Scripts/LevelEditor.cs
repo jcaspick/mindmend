@@ -8,7 +8,9 @@ public enum Tool
     Place,
     Erase,
     RedSignal,
-    BlueSignal
+    BlueSignal,
+    RedGoal,
+    BlueGoal
 }
 
 public class LevelEditor : MonoBehaviour
@@ -22,13 +24,17 @@ public class LevelEditor : MonoBehaviour
 
     public Node nodeVisualPrefab;
     public Signal signalVisualPrefab;
+    public Goal goalPrefab;
 
     private Board board;
     private Transform markerHolder;
     private Tool tool = Tool.Place;
+    private int goalIndex = 0;
     private List<Node> nodes;
     private Signal redSignal;
     private Signal blueSignal;
+    private Goal[] redGoals;
+    private Goal[] blueGoals;
 
     void Awake()
     {
@@ -42,6 +48,24 @@ public class LevelEditor : MonoBehaviour
     {
         board = new Board(width, height);
         nodes = new List<Node>();
+        redGoals = new Goal[6];
+        for (int i = 0; i < 6; i++)
+        {
+            redGoals[i] = Instantiate(goalPrefab);
+            redGoals[i].SetColor(GameColor.Red);
+            redGoals[i].gridCoordinates = new Vector2Int(0, height - 1);
+            redGoals[i].transform.position = new Vector3(0, height - 1, 0);
+            board.redGoals[i] = redGoals[i].gridCoordinates;
+        }
+        blueGoals = new Goal[6];
+        for (int i = 0; i < 6; i++)
+        {
+            blueGoals[i] = Instantiate(goalPrefab);
+            blueGoals[i].SetColor(GameColor.Blue);
+            blueGoals[i].gridCoordinates = new Vector2Int(width - 1, 0);
+            blueGoals[i].transform.position = new Vector3(width - 1, 0, 0);
+            board.blueGoals[i] = blueGoals[i].gridCoordinates;
+        }
 
         board.redSignalStart = new Vector2Int(0, 0);
         board.blueSignalStart = new Vector2Int(width - 1, height - 1);
@@ -122,6 +146,18 @@ public class LevelEditor : MonoBehaviour
         blueSignal.transform.position = new Vector3(gridCoordinates.x, gridCoordinates.y, 0);
     }
 
+    void SetRedGoal(Vector2Int gridCoordinates, int index)
+    {
+        board.redGoals[index] = gridCoordinates;
+        redGoals[index].transform.position = new Vector3(gridCoordinates.x, gridCoordinates.y, 0);
+    }
+
+    void SetBlueGoal(Vector2Int gridCoordinates, int index)
+    {
+        board.blueGoals[index] = gridCoordinates;
+        blueGoals[index].transform.position = new Vector3(gridCoordinates.x, gridCoordinates.y, 0);
+    }
+
     Node GetNodeAtCoordinates(Vector2Int coordinates)
     {
         foreach (var node in nodes)
@@ -169,12 +205,19 @@ public class LevelEditor : MonoBehaviour
             case Tool.BlueSignal:
                 SetBlueSignal(details.coordinates);
                 break;
+            case Tool.RedGoal:
+                SetRedGoal(details.coordinates, goalIndex);
+                break;
+            case Tool.BlueGoal:
+                SetBlueGoal(details.coordinates, goalIndex);
+                break;
         }
     }
 
     void HandleToolChange(EventDetails details)
     {
         tool = details.tool;
+        goalIndex = details.intData;
     }
 
     public void SaveBoard()

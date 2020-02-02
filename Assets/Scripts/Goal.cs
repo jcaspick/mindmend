@@ -32,7 +32,19 @@ public class Goal : MonoBehaviour
     public void SetColor(GameColor color)
     {
         this.color = color;
-        visual.SetColor(color);
+        if (!GameController.USE_PLACEHOLDER_GOAL)
+        {
+            visual.SetColor(color);
+        } else
+        {
+            foreach (var renderer in GetComponentsInChildren<Renderer>())
+            {
+                if (color == GameColor.Red)
+                    renderer.material = Resources.Load("red") as Material;
+                else if (color == GameColor.Blue)
+                    renderer.material = Resources.Load("blue") as Material;
+            }
+        }
     }
 
     IEnumerator AchieveAnimation()

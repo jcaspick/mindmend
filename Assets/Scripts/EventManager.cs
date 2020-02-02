@@ -8,6 +8,7 @@ public class EventDetails
     public Vector2Int coordinates;
     public Node node;
     public Tool tool;
+    public int intData;
 
     public EventDetails(Vector2Int coordinates)
     {
@@ -20,9 +21,10 @@ public class EventDetails
         this.coordinates = node.gridCoordinates;
     }
 
-    public EventDetails(Tool tool)
+    public EventDetails(Tool tool, int intData = -1)
     {
         this.tool = tool;
+        this.intData = intData;
     }
 }
 
