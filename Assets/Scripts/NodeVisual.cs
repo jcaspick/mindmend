@@ -41,8 +41,6 @@ public class NodeVisual : MonoBehaviour
     public void LowHealth() {
         GameObject mainNode = activeNode.transform.GetChild(0).gameObject;
 
-        Debug.Log(mainNode.name);
-
         Flicker flicker = mainNode.AddComponent<Flicker>();
         flicker.minWaitTime = 0;
         flicker.maxWaitTime = 2.0f;
