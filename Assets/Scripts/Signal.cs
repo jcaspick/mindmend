@@ -15,6 +15,8 @@ public class Signal : MonoBehaviour
         {
             visual = Instantiate(prefab);
             visual.transform.position = new Vector3(gridCoordinates.x, gridCoordinates.y, 0);
+
+            gameObject.GetComponentInChildren<Renderer>().enabled = false;
         }
     }
 

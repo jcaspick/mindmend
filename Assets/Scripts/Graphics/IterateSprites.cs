@@ -9,18 +9,17 @@ public class IterateSprites : MonoBehaviour
 	public Sprite[] sprites;
 	private int spriteIndex = 0;
 
+	public float iterateSpeed;
+
 	// Use this for initialization
 	void Start() {
 		renderer = gameObject.GetComponent<SpriteRenderer>();
+
+		InvokeRepeating("Iterate", 0, iterateSpeed );
 	}
 
-	// Update is called once per frame
-	void Update() {
-		spriteIndex++;
-		if (spriteIndex == sprites.Length) {
-			spriteIndex = 0;
-		}
-		renderer.sprite = sprites[spriteIndex];
+	void Iterate() {
+		renderer.sprite = sprites[ Random.Range(0, sprites.Length - 1) ];
 	}
 
 

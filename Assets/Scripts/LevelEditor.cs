@@ -289,8 +289,8 @@ public class LevelEditor : MonoBehaviour
     {
         Debug.Log("Saving board!");
         var boardData = JsonUtility.ToJson(board, true);
-        var savePath = Path.Combine(Application.dataPath, "Levels");
-        Directory.CreateDirectory(Path.Combine(Application.dataPath, "Levels"));
+        var savePath = Path.Combine(Application.persistentDataPath, "Levels");
+        Directory.CreateDirectory(Path.Combine(Application.persistentDataPath, "Levels"));
         File.WriteAllText(Path.Combine(savePath, "level.json"), boardData);
     }
 }
