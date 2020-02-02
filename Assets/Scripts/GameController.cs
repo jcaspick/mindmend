@@ -63,7 +63,17 @@ public class GameController : MonoBehaviour
 
         // load the level
         var boardPath = Path.Combine(Application.persistentDataPath, "Levels", "level.json");
-        board = BoardUtility.LoadFromJson(boardPath);
+        if (!File.Exists(boardPath))
+        {
+            Debug.Log("loading level from resources");
+            TextAsset boardData = (TextAsset)Resources.Load("level");
+            board = JsonUtility.FromJson<Board>(boardData.text);
+        } else
+        {
+            Debug.Log("loading custom level from persistent data path");
+            board = BoardUtility.LoadFromJson(boardPath);
+        }
+
         maxConnectionHealth = board.startingHealth;
         connectionHealthPerGoal = board.healthPerGoal;
 
