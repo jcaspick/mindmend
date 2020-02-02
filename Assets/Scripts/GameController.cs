@@ -24,7 +24,7 @@ public class GameController : MonoBehaviour
     public static bool USE_PLACEHOLDER_NODE = false;
     public static bool USE_PLACEHOLDER_CONNECTION = false;
     public static bool USE_PLACEHOLDER_SIGNAL = false;
-    public static bool USE_PLACEHOLDER_GOAL = true;
+    public static bool USE_PLACEHOLDER_GOAL = false;
 
     public GameObject mainCamera;
     public ClickableSpace clickableSpacePrefab;
@@ -353,6 +353,7 @@ public class GameController : MonoBehaviour
             connection.health--;
             if (connection.health <= 0)
             {
+                connection.Break();
                 connection.a.connections.Remove(connection);
                 connection.b.connections.Remove(connection);
                 if (connection.a.connections.Count == 0)

@@ -10,12 +10,12 @@ public class NodeVisual : MonoBehaviour
     public GameObject inactiveNode;
 
     public void Awake() {
-        foreach(Transform child in gameObject.transform) {
-            child.gameObject.SetActive(false);
-        }
+        Reset();
     }
 
     public void SetColor(GameColor color) {
+        Reset();
+
         switch (color) {
             case GameColor.Red:
                 redNode.SetActive(true);
@@ -29,9 +29,19 @@ public class NodeVisual : MonoBehaviour
         }
     }
 
+    public void Expire() {
+        SetColor(GameColor.Neutral);    
+    }
+
+    public void Reset() {
+        foreach (Transform child in gameObject.transform) {
+            child.gameObject.SetActive(false);
+        }
+    }
+
     public void Select()
     {
-
+        
     }
 
     public void Deselect()

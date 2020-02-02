@@ -16,20 +16,24 @@ public class Connection : MonoBehaviour
         if (!GameController.USE_PLACEHOLDER_CONNECTION)
         {
             visual = Instantiate(prefab);
-            visual.Create(a.transform.position, b.transform.position, angle);
+            visual.Create(a, b, angle);
             GetComponentInChildren<Renderer>().enabled = false;
         }
     }
 
-    public void SetHealthPercentage(float health)
+    public void Break() {
+        visual.Break();
+    }
+
+    public void SetHealthPercentage(float healthMetric)
     {
         if (GameController.USE_PLACEHOLDER_CONNECTION)
         {
             float length = transform.localScale.x;
-            transform.localScale = new Vector3(length, health, health);
+            transform.localScale = new Vector3(length, healthMetric, healthMetric);
         } else
         {
-            visual.SetHealthPercentage(health);
+            visual.SetHealthPercentage(health, healthMetric);
         }
     }
 

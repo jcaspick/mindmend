@@ -25,7 +25,7 @@ public class Goal : MonoBehaviour
             StartCoroutine(AchieveAnimation());
         } else
         {
-            visual.Achieve();
+            visual.Achieve(color);
         }
     }
 

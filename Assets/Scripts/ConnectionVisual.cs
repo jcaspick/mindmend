@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class ConnectionVisual : MonoBehaviour
 {
-    // Order in array represents layer order
     public GameObject blueConnection;
     public GameObject redConnection;
+
+    private Node originNode;
 
     public void Awake() {
         foreach (Transform child in gameObject.transform) {
@@ -14,24 +15,43 @@ public class ConnectionVisual : MonoBehaviour
         }
     }
 
-    public void Create(Vector3 startNode, Vector3 endNode, float angle)
+    public void Create(Node startNode, Node endNode, float angle)
     {
-        gameObject.transform.position = startNode; // start position
+        originNode = startNode;
+
+        gameObject.transform.position = startNode.transform.position; // start position
         gameObject.transform.rotation = Quaternion.Euler( new Vector3(gameObject.transform.rotation.x, gameObject.transform.rotation.y, angle - 180));
 
-        float distance = Vector3.Distance(startNode, endNode);
+        float distance = Vector3.Distance(startNode.transform.position, endNode.transform.position);
 
         SizeMask(gameObject.transform, distance);
     }
 
     public void Break()
     {
-
+        originNode.visual.Expire();
+        GameObject.Destroy(gameObject);    
     }
 
-    public void SetHealthPercentage(float health)
+    public void SetHealthPercentage(int health, float healthMetric)
     {
+        GameObject connection = gameObject.transform.GetChild(0).gameObject;
 
+        if (health <= 3) {
+            GameObject mainConnection = connection.transform.GetChild(0).gameObject;
+
+            Flicker flicker = mainConnection.GetComponent<Flicker>();
+            if(flicker == null) {
+                flicker = mainConnection.AddComponent<Flicker>();
+            }
+            flicker.minWaitTime = healthMetric;
+            flicker.maxWaitTime = health * healthMetric;
+
+            if (health == 1) {
+                flicker.minWaitTime = 0;
+                flicker.maxWaitTime = health;
+            }
+        }
     }
 
     public void SetColor(GameColor color)
@@ -39,9 +59,11 @@ public class ConnectionVisual : MonoBehaviour
         switch (color) {
             case GameColor.Red:
                 redConnection.SetActive(true);
+                GameObject.Destroy(blueConnection);
                 break;
             case GameColor.Blue:
                 blueConnection.SetActive(true);
+                GameObject.Destroy(redConnection);
                 break;
         }
     }

@@ -18,6 +18,10 @@ public class Signal : MonoBehaviour
         }
     }
 
+    public void Update() {
+        visual.transform.position = gameObject.transform.position;
+    }
+
     public void SetColor(GameColor color)
     {
         this.color = color;

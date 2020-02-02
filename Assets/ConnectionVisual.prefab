@@ -145,6 +145,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blueConnection: {fileID: 8827340511732804832}
   redConnection: {fileID: 5430635571284476827}
+  lowHealth: 2
 --- !u!210 &2444429099660473033
 SortingGroup:
   m_ObjectHideFlags: 0
