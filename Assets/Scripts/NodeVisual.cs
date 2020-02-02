@@ -9,6 +9,8 @@ public class NodeVisual : MonoBehaviour
     public GameObject redNode;
     public GameObject inactiveNode;
 
+    private GameObject activeNode;
+
     public void Awake() {
         Reset();
     }
@@ -19,18 +21,31 @@ public class NodeVisual : MonoBehaviour
         switch (color) {
             case GameColor.Red:
                 redNode.SetActive(true);
+                activeNode = redNode;
                 break;
             case GameColor.Blue:
                 blueNode.SetActive(true);
+                activeNode = blueNode;
                 break;
             default:
                 inactiveNode.SetActive(true);
+                activeNode = inactiveNode;
                 break;
         }
     }
 
     public void Expire() {
         SetColor(GameColor.Neutral);    
+    }
+
+    public void LowHealth() {
+        GameObject mainNode = activeNode.transform.GetChild(0).gameObject;
+
+        Debug.Log(mainNode.name);
+
+        Flicker flicker = mainNode.AddComponent<Flicker>();
+        flicker.minWaitTime = 0;
+        flicker.maxWaitTime = 2.0f;
     }
 
     public void Reset() {
