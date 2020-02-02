@@ -86,11 +86,34 @@ public class GameController : MonoBehaviour
         blueSignal.CreateVisuals(signalVisualPrefab);
         blueSignal.SetColor(GameColor.Blue);
 
+        // place the red and blue goals
         //var goal = Instantiate(goalPrefab);
         //goal.gridCoordinates = new Vector2Int(7, 7);
         //goal.transform.position = new Vector3(7, 7, 0);
         //goal.transform.SetParent(nodeHolder);
         //goals.Add(goal);
+
+        for (int i = 0; i < 6; i++)
+        {
+            var goal = Instantiate(goalPrefab);
+            goal.gridCoordinates = board.redGoals[i];
+            goal.transform.position = new Vector3(board.redGoals[i].x, board.redGoals[i].y, 0);
+            goal.transform.SetParent(nodeHolder);
+            goal.CreateVisuals(goalVisualPrefab);
+            goal.SetColor(GameColor.Red);
+            goals.Add(goal);
+        }
+
+        for (int i = 0; i < 6; i++)
+        {
+            var goal = Instantiate(goalPrefab);
+            goal.gridCoordinates = board.blueGoals[i];
+            goal.transform.position = new Vector3(board.blueGoals[i].x, board.blueGoals[i].y, 0);
+            goal.transform.SetParent(nodeHolder);
+            goal.CreateVisuals(goalVisualPrefab);
+            goal.SetColor(GameColor.Blue);
+            goals.Add(goal);
+        }
 
         int width = board.width;
         int height = board.height;
