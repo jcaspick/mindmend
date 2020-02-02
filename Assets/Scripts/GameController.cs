@@ -73,8 +73,8 @@ public class GameController : MonoBehaviour
         // initialize some stuff
         nodes = new List<Node>();
         connections = new List<Connection>();
-        redGoals = new Goal[6];
-        blueGoals = new Goal[6];
+        redGoals = new Goal[5];
+        blueGoals = new Goal[5];
         nodeHolder = new GameObject("nodes").transform;
         clickableHolder = new GameObject("clickable spaces").transform;
         phase = GamePhase.SelectStart;
@@ -334,7 +334,7 @@ public class GameController : MonoBehaviour
 
     IEnumerator CheckWinConditions(GameColor color)
     {
-        if (color == GameColor.Red && nextRedGoal < 6)
+        if (color == GameColor.Red && nextRedGoal < 5)
         {
             var goal = redGoals[nextRedGoal];
             if (goal.gridCoordinates == redSignal.gridCoordinates)
@@ -349,11 +349,11 @@ public class GameController : MonoBehaviour
                         connection.health += connectionHealthPerGoal;
                 }
 
-                if (nextRedGoal < 6)
+                if (nextRedGoal < 5)
                     RevealGoal(nextRedGoal, GameColor.Red);
             }
         }
-        else if (color == GameColor.Blue && nextBlueGoal < 6)
+        else if (color == GameColor.Blue && nextBlueGoal < 5)
         {
             var goal = blueGoals[nextBlueGoal];
             if (goal.gridCoordinates == blueSignal.gridCoordinates)
@@ -368,12 +368,12 @@ public class GameController : MonoBehaviour
                         connection.health += connectionHealthPerGoal;
                 }
 
-                if (nextBlueGoal < 6)
+                if (nextBlueGoal < 5)
                     RevealGoal(nextBlueGoal, GameColor.Blue);
             }
         }
 
-        if (nextRedGoal == 6 && nextBlueGoal == 6)
+        if (nextRedGoal == 5 && nextBlueGoal == 5)
         {
             Debug.Log("you win!");
             // FINAL VICTORY SEQUENCE GOES HERE

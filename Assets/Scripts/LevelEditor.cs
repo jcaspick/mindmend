@@ -51,15 +51,15 @@ public class LevelEditor : MonoBehaviour
     {
         nodes = new List<Node>();
         markers = new List<EditorMarker>();
-        redGoals = new Goal[6];
+        redGoals = new Goal[5];
+        blueGoals = new Goal[5];
 
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 5; i++)
         {
             redGoals[i] = Instantiate(goalPrefab);
             redGoals[i].SetColor(GameColor.Red);
         }
-        blueGoals = new Goal[6];
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 5; i++)
         {
             blueGoals[i] = Instantiate(goalPrefab);
             blueGoals[i].SetColor(GameColor.Blue);
@@ -87,13 +87,13 @@ public class LevelEditor : MonoBehaviour
         board.startingHealth = startingHealth;
         board.healthPerGoal = healthPerGoal;
 
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 5; i++)
         {
             redGoals[i].gridCoordinates = new Vector2Int(0, height - 1);
             redGoals[i].transform.position = new Vector3(0, height - 1, 0);
             board.redGoals[i] = redGoals[i].gridCoordinates;
         }
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 5; i++)
         {
             blueGoals[i].gridCoordinates = new Vector2Int(width - 1, 0);
             blueGoals[i].transform.position = new Vector3(width - 1, 0, 0);

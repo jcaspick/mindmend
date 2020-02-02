@@ -20,8 +20,8 @@ public class Board
         this.height = height;
         startingHealth = 5;
         healthPerGoal = 2;
-        redGoals = new Vector2Int[6];
-        blueGoals = new Vector2Int[6];
+        redGoals = new Vector2Int[5];
+        blueGoals = new Vector2Int[5];
         arrangement = new bool[width * height];
     }
 
