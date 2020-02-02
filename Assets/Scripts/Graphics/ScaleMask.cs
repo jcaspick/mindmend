@@ -24,7 +24,7 @@ public class ScaleMask : MonoBehaviour
     public IEnumerator ScaleMaskToLength() {
         for (float f = 0.0f; f < 1.0f; f += Time.deltaTime / drawSpeed) {
             maskRect.localScale = new Vector2(fullLength * f, maskRect.localScale.y); // draw the line
-            maskRect.localPosition = new Vector2(fullLength - maskRect.localScale.x, 0); // offset the edge to look like it's drawing from left
+            maskRect.localPosition = new Vector2(-maskRect.localScale.x, 0); // offset the edge to look like it's drawing from left
 
             yield return null;
         }

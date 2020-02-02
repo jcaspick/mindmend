@@ -21,9 +21,9 @@ public enum GameColor
 
 public class GameController : MonoBehaviour
 {
-    public static bool USE_PLACEHOLDER_NODE = true;
-    public static bool USE_PLACEHOLDER_CONNECTION = true;
-    public static bool USE_PLACEHOLDER_SIGNAL = true;
+    public static bool USE_PLACEHOLDER_NODE = false;
+    public static bool USE_PLACEHOLDER_CONNECTION = false;
+    public static bool USE_PLACEHOLDER_SIGNAL = false;
     public static bool USE_PLACEHOLDER_GOAL = true;
 
     public GameObject mainCamera;
