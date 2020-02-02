@@ -91,4 +91,14 @@ public static class NodeExtensions
             Mathf.Abs(self.gridCoordinates.y - other.gridCoordinates.y);
         return distance == 2;
     }
+
+    public static bool IsConnected(this Node self, Node other)
+    {
+        foreach (var connection in self.connections)
+        {
+            if (connection.a == other || connection.b == other)
+                return true;
+        }
+        return false;
+    }
 }

@@ -185,6 +185,10 @@ public class GameController : MonoBehaviour
 
     bool IsValidFirstNode(Node node)
     {
+        if (currentPlayer == GameColor.Red && node.gridCoordinates == redSignal.gridCoordinates)
+            return true;
+        if (currentPlayer == GameColor.Blue && node.gridCoordinates == blueSignal.gridCoordinates)
+            return true;
         return (node.color == currentPlayer);
     }
 
@@ -233,6 +237,8 @@ public class GameController : MonoBehaviour
         if (node == firstClicked)
             return false;
         if (!node.IsNeighbor(firstClicked))
+            return false;
+        if (node.IsConnected(firstClicked))
             return false;
         if (node.color == currentPlayer || node.color == GameColor.Neutral)
         {
