@@ -49,7 +49,9 @@ public class ConnectionVisual : MonoBehaviour
 
             if (health == 1) {
                 flicker.minWaitTime = 0;
-                flicker.maxWaitTime = health;
+                flicker.maxWaitTime = 1.0f;
+
+                originNode.visual.LowHealth();
             }
         }
     }
