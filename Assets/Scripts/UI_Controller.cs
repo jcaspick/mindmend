@@ -41,8 +41,8 @@ public class UI_Controller : MonoBehaviour
         memoryImage.sprite = sprite;
 
         yield return StartCoroutine(MemoryFadeIn(0.5f));
-        yield return new WaitForSeconds(1.0f);
-        StartCoroutine(MemoryFadeOut(3.0f));
+        yield return new WaitForSeconds(2.0f);
+        StartCoroutine(MemoryFadeOut(2.5f));
     }
 
     public IEnumerator ShowFinalMemory()
@@ -50,8 +50,36 @@ public class UI_Controller : MonoBehaviour
         StopAllCoroutines();
         memoryImage.sprite = finalMemory;
 
-        yield return StartCoroutine(MemoryFadeIn(2.5f));
-        yield return new WaitForSeconds(5.0f);
+        yield return StartCoroutine(FadeToBlack(4.5f));
+    }
+
+    public IEnumerator FadeToBlack(float duration)
+    {
+        float elapsed = 0;
+        float redStart = redTurnFader.alpha;
+        float blueStart = blueTurnFader.alpha;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.SmoothStep(0, 1, elapsed / duration);
+            blackScreenFader.alpha = Mathf.Lerp(0.0f, 1.0f, t);
+            redTurnFader.alpha = Mathf.Lerp(redStart, 0.0f, t);
+            blueTurnFader.alpha = Mathf.Lerp(blueStart, 0.0f, t);
+            memoryFader.alpha = Mathf.Lerp(0.0f, 1.0f, t);
+            yield return null;
+        }
+    }
+
+    public IEnumerator FinalMemoryFadeIn(float duration)
+    {
+        float elapsed = 0;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.SmoothStep(0, 1, elapsed / duration);
+            memoryFader.alpha = Mathf.Lerp(0.0f, 1.0f, t);
+            yield return null;
+        }
     }
 
     public IEnumerator MemoryFadeIn(float duration)
