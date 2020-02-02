@@ -191,7 +191,7 @@ public class GameController : MonoBehaviour
             return true;
         if (currentPlayer == GameColor.Blue && node.gridCoordinates == blueSignal.gridCoordinates)
             return true;
-        return (node.color == currentPlayer);
+        return (node.color == currentPlayer && HasLegalMove(node));
     }
 
     void ChooseSecondNode(Node node)
@@ -443,20 +443,26 @@ public class GameController : MonoBehaviour
 
         foreach (var node in coloredNodes)
         {
-            foreach (var coordinates in node.GetNeighborCoords())
-            {
-                if (!board.HasNode(coordinates))
-                    continue;
-                var neighbor = GetNodeAtCoordinates(coordinates);
-
-                if (neighbor.color == GameColor.Neutral)
-                    return false;
-                if (neighbor.color == color && !neighbor.IsConnected(node))
-                    return false;
-            }
+            if (HasLegalMove(node))
+                return false;
         }
 
         return true;
+    }
+
+    bool HasLegalMove(Node node)
+    {
+        foreach (var coordinates in node.GetNeighborCoords())
+        {
+            if (!board.HasNode(coordinates))
+                continue;
+            var neighbor = GetNodeAtCoordinates(coordinates);
+
+            if (neighbor.color == GameColor.Neutral)
+                return true;
+        }
+
+        return false;
     }
 
     int TotalConnectionHealth()
