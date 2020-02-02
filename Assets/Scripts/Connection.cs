@@ -22,7 +22,8 @@ public class Connection : MonoBehaviour
     }
 
     public void Break() {
-        visual.Break();
+        if (!GameController.USE_PLACEHOLDER_CONNECTION)
+            visual.Break();
     }
 
     public void SetHealthPercentage(float healthMetric)

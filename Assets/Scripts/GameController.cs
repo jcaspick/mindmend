@@ -21,10 +21,10 @@ public enum GameColor
 
 public class GameController : MonoBehaviour
 {
-    public static bool USE_PLACEHOLDER_NODE = false;
-    public static bool USE_PLACEHOLDER_CONNECTION = false;
-    public static bool USE_PLACEHOLDER_SIGNAL = false;
-    public static bool USE_PLACEHOLDER_GOAL = false;
+    public static bool USE_PLACEHOLDER_NODE = true;
+    public static bool USE_PLACEHOLDER_CONNECTION = true;
+    public static bool USE_PLACEHOLDER_SIGNAL = true;
+    public static bool USE_PLACEHOLDER_GOAL = true;
 
     public GameObject mainCamera;
     public ClickableSpace clickableSpacePrefab;
@@ -85,13 +85,6 @@ public class GameController : MonoBehaviour
         blueSignal.transform.SetParent(nodeHolder);
         blueSignal.CreateVisuals(signalVisualPrefab);
         blueSignal.SetColor(GameColor.Blue);
-
-        // place the red and blue goals
-        //var goal = Instantiate(goalPrefab);
-        //goal.gridCoordinates = new Vector2Int(7, 7);
-        //goal.transform.position = new Vector3(7, 7, 0);
-        //goal.transform.SetParent(nodeHolder);
-        //goals.Add(goal);
 
         for (int i = 0; i < 6; i++)
         {

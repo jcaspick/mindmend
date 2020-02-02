@@ -19,7 +19,8 @@ public class Signal : MonoBehaviour
     }
 
     public void Update() {
-        visual.transform.position = gameObject.transform.position;
+        if (!GameController.USE_PLACEHOLDER_SIGNAL)
+            visual.transform.position = gameObject.transform.position;
     }
 
     public void SetColor(GameColor color)

@@ -15,6 +15,10 @@ public class Goal : MonoBehaviour
         {
             visual = Instantiate(prefab);
             visual.transform.position = new Vector3(gridCoordinates.x, gridCoordinates.y, 0);
+            foreach (var renderer in GetComponentsInChildren<Renderer>())
+            {
+                renderer.enabled = false;
+            }
         }
     }
 
