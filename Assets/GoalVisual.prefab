@@ -239,4 +239,5 @@ MonoBehaviour:
   redGoalActive: {fileID: 21300000, guid: d44e9877026f04947afef2ad802aca75, type: 3}
   maxScale: 1.5
   growFactor: 2.5
-  waitTime: 0.1
+  waitTime: 0.01
+  fadeSpeed: 0.5
