@@ -9,7 +9,9 @@ public enum GamePhase
     SelectEnd,
     SignalsMove,
     CheckWinConditions,
-    ConnectionsDecay
+    ConnectionsDecay,
+    Win,
+    Lose
 }
 
 public enum GameColor
@@ -240,7 +242,7 @@ public class GameController : MonoBehaviour
             return false;
         if (node.IsConnected(firstClicked))
             return false;
-        if (node.color == currentPlayer || node.color == GameColor.Neutral)
+        if (node.color == GameColor.Neutral)
         {
             return true;
         } else
@@ -422,7 +424,39 @@ public class GameController : MonoBehaviour
         secondClicked = null;
         currentPlayer = currentPlayer == GameColor.Red ? GameColor.Blue : GameColor.Red;
         EventManager.Invoke(EventType.PlayerChange, new EventDetails(currentPlayer));
+
+        if (IsLoseCondition(currentPlayer))
+        {
+            Debug.Log("You lose!");
+        }
         phase = GamePhase.SelectStart;
+    }
+
+    bool IsLoseCondition(GameColor color)
+    {
+        var coloredNodes = new List<Node>();
+        foreach (var node in nodes)
+        {
+            if (node.color == color)
+                coloredNodes.Add(node);
+        }
+
+        foreach (var node in coloredNodes)
+        {
+            foreach (var coordinates in node.GetNeighborCoords())
+            {
+                if (!board.HasNode(coordinates))
+                    continue;
+                var neighbor = GetNodeAtCoordinates(coordinates);
+
+                if (neighbor.color == GameColor.Neutral)
+                    return false;
+                if (neighbor.color == color && !neighbor.IsConnected(node))
+                    return false;
+            }
+        }
+
+        return true;
     }
 
     int TotalConnectionHealth()

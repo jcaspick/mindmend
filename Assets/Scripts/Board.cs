@@ -37,6 +37,11 @@ public class Board
 
     public bool HasNode(Vector2Int coordinates)
     {
+        if (coordinates.x < 0 ||
+            coordinates.x >= width ||
+            coordinates.y < 0 ||
+            coordinates.y >= height)
+            return false;
         return arrangement[coordinates.y * width + coordinates.x];
     }
 }

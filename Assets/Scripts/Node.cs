@@ -101,4 +101,21 @@ public static class NodeExtensions
         }
         return false;
     }
+
+    public static List<Vector2Int> GetNeighborCoords(this Node self)
+    {
+        var a = self.gridCoordinates;
+        var result = new List<Vector2Int>();
+
+        result.Add(new Vector2Int(a.x + 1, a.y    ));
+        result.Add(new Vector2Int(a.x + 1, a.y + 1));
+        result.Add(new Vector2Int(a.x,     a.y + 1));
+        result.Add(new Vector2Int(a.x - 1, a.y + 1));
+        result.Add(new Vector2Int(a.x - 1, a.y    ));
+        result.Add(new Vector2Int(a.x - 1, a.y - 1));
+        result.Add(new Vector2Int(a.x,     a.y - 1));
+        result.Add(new Vector2Int(a.x + 1, a.y - 1));
+
+        return result;
+    }
 }
