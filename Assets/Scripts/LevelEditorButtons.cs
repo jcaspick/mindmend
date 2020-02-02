@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LevelEditorButtons : MonoBehaviour
 {
@@ -37,5 +38,34 @@ public class LevelEditorButtons : MonoBehaviour
     public void Save()
     {
         LevelEditor.instance.SaveBoard();
+    }
+
+    public void SetBoardWidth(string str)
+    {
+        int width = int.Parse(str);
+        LevelEditor.instance.ChangeWidth(width);
+    }
+
+    public void SetBoardHeight(string str)
+    {
+        int height = int.Parse(str);
+        LevelEditor.instance.ChangeHeight(height);
+    }
+
+    public void SetStartingHealth(string str)
+    {
+        int health = int.Parse(str);
+        LevelEditor.instance.SetStartingHealth(health);
+    }
+
+    public void SetHealthPerGoal(string str)
+    {
+        int health = int.Parse(str);
+        LevelEditor.instance.SetHealthPerGoal(health);
+    }
+
+    public void MainMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
     }
 }

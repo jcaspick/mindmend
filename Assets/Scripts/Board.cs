@@ -6,6 +6,8 @@ public class Board
 {
     public int width;
     public int height;
+    public int startingHealth;
+    public int healthPerGoal;
     public Vector2Int redSignalStart;
     public Vector2Int blueSignalStart;
     public Vector2Int[] redGoals;
@@ -16,6 +18,8 @@ public class Board
     {
         this.width = width;
         this.height = height;
+        startingHealth = 5;
+        healthPerGoal = 2;
         redGoals = new Vector2Int[6];
         blueGoals = new Vector2Int[6];
         arrangement = new bool[width * height];

@@ -40,6 +40,7 @@ public class GameController : MonoBehaviour
     public GoalVisual goalVisualPrefab;
 
     public int maxConnectionHealth;
+    public int connectionHealthPerGoal;
 
     private Transform nodeHolder;
     private Transform clickableHolder;
@@ -49,9 +50,13 @@ public class GameController : MonoBehaviour
     private Signal redSignal;
     private Signal blueSignal;
     private List<Connection> connections;
-    private List<Goal> goals;
+    private Goal[] redGoals;
+    private Goal[] blueGoals;
+
     private GamePhase phase;
     private GameColor currentPlayer = GameColor.Red;
+    private int nextRedGoal = 0;
+    private int nextBlueGoal = 0;
     private Node firstClicked;
     private Node secondClicked;
 
@@ -62,11 +67,14 @@ public class GameController : MonoBehaviour
         // load the level
         var boardPath = Path.Combine(Application.dataPath, "Levels", "level.json");
         board = BoardUtility.LoadFromJson(boardPath);
+        maxConnectionHealth = board.startingHealth;
+        connectionHealthPerGoal = board.healthPerGoal;
 
         // initialize some stuff
         nodes = new List<Node>();
         connections = new List<Connection>();
-        goals = new List<Goal>();
+        redGoals = new Goal[6];
+        blueGoals = new Goal[6];
         nodeHolder = new GameObject("nodes").transform;
         clickableHolder = new GameObject("clickable spaces").transform;
         phase = GamePhase.SelectStart;
@@ -86,27 +94,9 @@ public class GameController : MonoBehaviour
         blueSignal.CreateVisuals(signalVisualPrefab);
         blueSignal.SetColor(GameColor.Blue);
 
-        for (int i = 0; i < 6; i++)
-        {
-            var goal = Instantiate(goalPrefab);
-            goal.gridCoordinates = board.redGoals[i];
-            goal.transform.position = new Vector3(board.redGoals[i].x, board.redGoals[i].y, 0);
-            goal.transform.SetParent(nodeHolder);
-            goal.CreateVisuals(goalVisualPrefab);
-            goal.SetColor(GameColor.Red);
-            goals.Add(goal);
-        }
-
-        for (int i = 0; i < 6; i++)
-        {
-            var goal = Instantiate(goalPrefab);
-            goal.gridCoordinates = board.blueGoals[i];
-            goal.transform.position = new Vector3(board.blueGoals[i].x, board.blueGoals[i].y, 0);
-            goal.transform.SetParent(nodeHolder);
-            goal.CreateVisuals(goalVisualPrefab);
-            goal.SetColor(GameColor.Blue);
-            goals.Add(goal);
-        }
+        // reveal the first red and blue goals
+        RevealGoal(0, GameColor.Red);
+        RevealGoal(0, GameColor.Blue);
 
         int width = board.width;
         int height = board.height;
@@ -143,6 +133,30 @@ public class GameController : MonoBehaviour
         }
 
         mainCamera.transform.position = new Vector3(((float)width - 1) * 0.5f, ((float)height - 1) * 0.5f, -10);
+    }
+
+    void RevealGoal(int i, GameColor color)
+    {
+        if (color == GameColor.Red)
+        {
+            var goal = Instantiate(goalPrefab);
+            goal.gridCoordinates = board.redGoals[i];
+            goal.transform.position = new Vector3(board.redGoals[i].x, board.redGoals[i].y, 0);
+            goal.transform.SetParent(nodeHolder);
+            goal.CreateVisuals(goalVisualPrefab);
+            goal.SetColor(GameColor.Red);
+            redGoals[i] = goal;
+        }
+        else if (color == GameColor.Blue)
+        {
+            var goal = Instantiate(goalPrefab);
+            goal.gridCoordinates = board.blueGoals[i];
+            goal.transform.position = new Vector3(board.blueGoals[i].x, board.blueGoals[i].y, 0);
+            goal.transform.SetParent(nodeHolder);
+            goal.CreateVisuals(goalVisualPrefab);
+            goal.SetColor(GameColor.Blue);
+            blueGoals[i] = goal;
+        }
     }
 
     void HandleSpaceClicked(EventDetails details)
@@ -193,7 +207,7 @@ public class GameController : MonoBehaviour
 
         connection.a = firstClicked;
         connection.b = secondClicked;
-        connection.health = maxConnectionHealth;
+        connection.health = TotalConnectionHealth();
 
         connection.CreateVisuals(connectionVisualPrefab, angle);
 
@@ -320,16 +334,51 @@ public class GameController : MonoBehaviour
 
     void CheckWinConditions(GameColor color)
     {
-        var signal = color == GameColor.Red ? redSignal : blueSignal;
-        for (int i = goals.Count - 1; i >= 0; i--)
+        if (color == GameColor.Red && nextRedGoal < 6)
         {
-            var goal = goals[i];
-            if (goal.gridCoordinates == signal.gridCoordinates)
+            var goal = redGoals[nextRedGoal];
+            if (goal.gridCoordinates == redSignal.gridCoordinates)
             {
-                Debug.Log("goal reached!");
                 goal.Achieve();
-                goals.Remove(goal);
+                nextRedGoal++;
+
+                foreach (var connection in connections)
+                {
+                    if (connection.color == GameColor.Red)
+                        connection.health += connectionHealthPerGoal;
+                }
+
+                if (nextRedGoal < 6)
+                    RevealGoal(nextRedGoal, GameColor.Red);
+
+                // RED MEMORY TRIGGER GOES HERE
             }
+        }
+        else if (color == GameColor.Blue && nextBlueGoal < 6)
+        {
+            var goal = blueGoals[nextBlueGoal];
+            if (goal.gridCoordinates == blueSignal.gridCoordinates)
+            {
+                goal.Achieve();
+                nextBlueGoal++;
+
+                foreach (var connection in connections)
+                {
+                    if (connection.color == GameColor.Blue)
+                        connection.health += connectionHealthPerGoal;
+                }
+
+                if (nextBlueGoal < 6)
+                    RevealGoal(nextBlueGoal, GameColor.Blue);
+
+                // BLUE MEMORY TRIGGER GOES HERE
+            }
+        }
+
+        if (nextRedGoal == 6 && nextBlueGoal == 6)
+        {
+            Debug.Log("you win!");
+            // FINAL VICTORY SEQUENCE GOES HERE
         }
 
         phase = GamePhase.ConnectionsDecay;
@@ -358,7 +407,7 @@ public class GameController : MonoBehaviour
             }
             else
             {
-                connection.SetHealthPercentage((float)connection.health / (float)maxConnectionHealth);
+                connection.SetHealthPercentage((float)connection.health / (float)TotalConnectionHealth());
             }
         }
 
@@ -369,5 +418,10 @@ public class GameController : MonoBehaviour
         currentPlayer = currentPlayer == GameColor.Red ? GameColor.Blue : GameColor.Red;
         EventManager.Invoke(EventType.PlayerChange, new EventDetails(currentPlayer));
         phase = GamePhase.SelectStart;
+    }
+
+    int TotalConnectionHealth()
+    {
+        return maxConnectionHealth + (connectionHealthPerGoal * (nextRedGoal + nextBlueGoal));
     }
 }

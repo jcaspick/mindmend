@@ -19,6 +19,8 @@ public class LevelEditor : MonoBehaviour
 
     public int width = 8;
     public int height = 8;
+    public int startingHealth = 5;
+    public int healthPerGoal = 2;
     public EditorMarker markerPrefab;
     public GameObject mainCamera;
 
@@ -31,6 +33,7 @@ public class LevelEditor : MonoBehaviour
     private Tool tool = Tool.Place;
     private int goalIndex = 0;
     private List<Node> nodes;
+    private List<EditorMarker> markers;
     private Signal redSignal;
     private Signal blueSignal;
     private Goal[] redGoals;
@@ -46,22 +49,52 @@ public class LevelEditor : MonoBehaviour
 
     void Start()
     {
-        board = new Board(width, height);
         nodes = new List<Node>();
+        markers = new List<EditorMarker>();
         redGoals = new Goal[6];
+
         for (int i = 0; i < 6; i++)
         {
             redGoals[i] = Instantiate(goalPrefab);
             redGoals[i].SetColor(GameColor.Red);
-            redGoals[i].gridCoordinates = new Vector2Int(0, height - 1);
-            redGoals[i].transform.position = new Vector3(0, height - 1, 0);
-            board.redGoals[i] = redGoals[i].gridCoordinates;
         }
         blueGoals = new Goal[6];
         for (int i = 0; i < 6; i++)
         {
             blueGoals[i] = Instantiate(goalPrefab);
             blueGoals[i].SetColor(GameColor.Blue);
+        }
+
+        redSignal = Instantiate(signalVisualPrefab);
+        redSignal.SetColor(GameColor.Red);
+
+        blueSignal = Instantiate(signalVisualPrefab);
+        blueSignal.SetColor(GameColor.Blue);
+
+        markerHolder = new GameObject("markers").transform;
+
+        EventManager.AddListener(EventType.EditorMarkerEnter, HandleMarkerEnter);
+        EventManager.AddListener(EventType.EditorMarkerExit, HandleMarkerExit);
+        EventManager.AddListener(EventType.EditorMarkerClick, HandleMarkerClick);
+        EventManager.AddListener(EventType.EditorToolChange, HandleToolChange);
+
+        CreateDefaultBoard();
+    }
+
+    void CreateDefaultBoard()
+    {
+        board = new Board(width, height);
+        board.startingHealth = startingHealth;
+        board.healthPerGoal = healthPerGoal;
+
+        for (int i = 0; i < 6; i++)
+        {
+            redGoals[i].gridCoordinates = new Vector2Int(0, height - 1);
+            redGoals[i].transform.position = new Vector3(0, height - 1, 0);
+            board.redGoals[i] = redGoals[i].gridCoordinates;
+        }
+        for (int i = 0; i < 6; i++)
+        {
             blueGoals[i].gridCoordinates = new Vector2Int(width - 1, 0);
             blueGoals[i].transform.position = new Vector3(width - 1, 0, 0);
             board.blueGoals[i] = blueGoals[i].gridCoordinates;
@@ -69,28 +102,26 @@ public class LevelEditor : MonoBehaviour
 
         board.redSignalStart = new Vector2Int(0, 0);
         board.blueSignalStart = new Vector2Int(width - 1, height - 1);
-        redSignal = Instantiate(signalVisualPrefab);
         redSignal.transform.position = Vector3.zero;
-        redSignal.SetColor(GameColor.Red);
-
-        blueSignal = Instantiate(signalVisualPrefab);
         blueSignal.transform.position = new Vector3(width - 1, height - 1, 0);
-        blueSignal.SetColor(GameColor.Blue);
 
-        markerHolder = new GameObject("markers").transform;
         GenerateMarkers();
         GenerateNodes();
-
-        EventManager.AddListener(EventType.EditorMarkerEnter, HandleMarkerEnter);
-        EventManager.AddListener(EventType.EditorMarkerExit, HandleMarkerExit);
-        EventManager.AddListener(EventType.EditorMarkerClick, HandleMarkerClick);
-        EventManager.AddListener(EventType.EditorToolChange, HandleToolChange);
 
         mainCamera.transform.position = new Vector3(((float)width - 1) * 0.5f, ((float)height - 1) * 0.5f, -10);
     }
 
     void GenerateMarkers()
     {
+        // clear existing markers first
+        for (int i = markers.Count - 1; i >= 0; i--)
+        {
+            var marker = markers[i];
+            markers.Remove(marker);
+            Destroy(marker.gameObject);
+        }
+
+        // make grid
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -99,12 +130,22 @@ public class LevelEditor : MonoBehaviour
                 marker.transform.position = new Vector3(x, y, -4);
                 marker.gridCoordinates = new Vector2Int(x, y);
                 marker.transform.SetParent(markerHolder);
+                markers.Add(marker);
             }
         }
     }
 
     void GenerateNodes()
     {
+        // clear existing nodes first
+        for (int i = nodes.Count - 1; i >= 0; i--)
+        {
+            var node = nodes[i];
+            nodes.Remove(node);
+            Destroy(node.gameObject);
+        }
+
+        // make grid
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -156,6 +197,30 @@ public class LevelEditor : MonoBehaviour
     {
         board.blueGoals[index] = gridCoordinates;
         blueGoals[index].transform.position = new Vector3(gridCoordinates.x, gridCoordinates.y, 0);
+    }
+
+    public void ChangeWidth(int width)
+    {
+        this.width = width;
+        CreateDefaultBoard();
+    }
+
+    public void ChangeHeight(int height)
+    {
+        this.height = height;
+        CreateDefaultBoard();
+    }
+
+    public void SetStartingHealth(int health)
+    {
+        startingHealth = health;
+        board.startingHealth = health;
+    }
+
+    public void SetHealthPerGoal(int health)
+    {
+        healthPerGoal = health;
+        board.healthPerGoal = health;
     }
 
     Node GetNodeAtCoordinates(Vector2Int coordinates)
