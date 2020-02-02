@@ -380,11 +380,12 @@ public class GameController : MonoBehaviour
         {
             yield return new WaitForSeconds(3.0f);
             yield return StartCoroutine(UI_Controller.instance.ShowFinalMemory());
+        } else
+        {
+            yield return null;
+            phase = GamePhase.ConnectionsDecay;
+            StartCoroutine(ConnectionsDecay(currentPlayer));
         }
-
-        yield return null;
-        phase = GamePhase.ConnectionsDecay;
-        StartCoroutine(ConnectionsDecay(currentPlayer));
     }
 
     IEnumerator ConnectionsDecay(GameColor color)
