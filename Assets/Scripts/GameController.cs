@@ -311,7 +311,7 @@ public class GameController : MonoBehaviour
         }
 
         phase = GamePhase.CheckWinConditions;
-        CheckWinConditions(currentPlayer);
+        StartCoroutine(CheckWinConditions(currentPlayer));
     }
 
     IEnumerator TweenSignal(Signal signal, Node start, Node end)
@@ -332,7 +332,7 @@ public class GameController : MonoBehaviour
         signal.transform.position = end.transform.position;
     }
 
-    void CheckWinConditions(GameColor color)
+    IEnumerator CheckWinConditions(GameColor color)
     {
         if (color == GameColor.Red && nextRedGoal < 6)
         {
@@ -340,8 +340,9 @@ public class GameController : MonoBehaviour
             if (goal.gridCoordinates == redSignal.gridCoordinates)
             {
                 goal.Achieve();
-                nextRedGoal++;
+                yield return StartCoroutine(UI_Controller.instance.ShowMemory(GameColor.Red, nextRedGoal));
 
+                nextRedGoal++;
                 foreach (var connection in connections)
                 {
                     if (connection.color == GameColor.Red)
@@ -350,8 +351,6 @@ public class GameController : MonoBehaviour
 
                 if (nextRedGoal < 6)
                     RevealGoal(nextRedGoal, GameColor.Red);
-
-                // RED MEMORY TRIGGER GOES HERE
             }
         }
         else if (color == GameColor.Blue && nextBlueGoal < 6)
@@ -360,8 +359,9 @@ public class GameController : MonoBehaviour
             if (goal.gridCoordinates == blueSignal.gridCoordinates)
             {
                 goal.Achieve();
-                nextBlueGoal++;
+                yield return StartCoroutine(UI_Controller.instance.ShowMemory(GameColor.Blue, nextBlueGoal));
 
+                nextBlueGoal++;
                 foreach (var connection in connections)
                 {
                     if (connection.color == GameColor.Blue)
@@ -370,8 +370,6 @@ public class GameController : MonoBehaviour
 
                 if (nextBlueGoal < 6)
                     RevealGoal(nextBlueGoal, GameColor.Blue);
-
-                // BLUE MEMORY TRIGGER GOES HERE
             }
         }
 
@@ -381,6 +379,7 @@ public class GameController : MonoBehaviour
             // FINAL VICTORY SEQUENCE GOES HERE
         }
 
+        yield return null;
         phase = GamePhase.ConnectionsDecay;
         StartCoroutine(ConnectionsDecay(currentPlayer));
     }
