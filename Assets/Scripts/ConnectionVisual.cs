@@ -29,7 +29,6 @@ public class ConnectionVisual : MonoBehaviour
 
     public void Break()
     {
-        originNode.visual.Expire();
         GameObject.Destroy(gameObject);    
     }
 

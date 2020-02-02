@@ -9,10 +9,14 @@ public class NodeVisual : MonoBehaviour
     public GameObject redNode;
     public GameObject inactiveNode;
 
+    public Vector3 selectScale = new Vector3(0.1f, 0.1f, 0.1f);
+    private Vector3 originalScale;
+
     private GameObject activeNode;
 
     public void Awake() {
         Reset();
+        originalScale = transform.localScale;
     }
 
     public void SetColor(GameColor color) {
@@ -34,10 +38,6 @@ public class NodeVisual : MonoBehaviour
         }
     }
 
-    public void Expire() {
-        SetColor(GameColor.Neutral);    
-    }
-
     public void LowHealth() {
         GameObject mainNode = activeNode.transform.GetChild(0).gameObject;
 
@@ -54,11 +54,12 @@ public class NodeVisual : MonoBehaviour
 
     public void Select()
     {
-        
+        gameObject.transform.localScale = transform.localScale + selectScale;
     }
 
     public void Deselect()
     {
-
+        gameObject.transform.localScale = originalScale;
     }
+
 }
