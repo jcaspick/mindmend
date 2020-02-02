@@ -14,6 +14,7 @@ public class UI_Controller : MonoBehaviour
 
     public List<Sprite> redMemories;
     public List<Sprite> blueMemories;
+    public Sprite finalMemory;
 
     void Awake()
     {
@@ -35,6 +36,16 @@ public class UI_Controller : MonoBehaviour
         yield return StartCoroutine(MemoryFadeIn(0.5f));
         yield return new WaitForSeconds(1.0f);
         StartCoroutine(MemoryFadeOut(3.0f));
+    }
+
+    public IEnumerator ShowFinalMemory()
+    {
+        StopAllCoroutines();
+
+        var sprite = finalMemory;
+
+        yield return StartCoroutine(MemoryFadeIn(2.5f));
+        yield return new WaitForSeconds(5.0f);
     }
 
     public IEnumerator MemoryFadeIn(float duration)

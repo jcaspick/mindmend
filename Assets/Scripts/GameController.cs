@@ -67,7 +67,7 @@ public class GameController : MonoBehaviour
         EventManager.AddListener(EventType.SpaceClicked, HandleSpaceClicked);
 
         // load the level
-        var boardPath = Path.Combine(Application.dataPath, "Levels", "level.json");
+        var boardPath = Path.Combine(Application.persistentDataPath, "Levels", "level.json");
         board = BoardUtility.LoadFromJson(boardPath);
         maxConnectionHealth = board.startingHealth;
         connectionHealthPerGoal = board.healthPerGoal;
@@ -383,8 +383,7 @@ public class GameController : MonoBehaviour
 
         if (nextRedGoal == 5 && nextBlueGoal == 5)
         {
-            Debug.Log("you win!");
-            // FINAL VICTORY SEQUENCE GOES HERE
+            yield return StartCoroutine(UI_Controller.instance.ShowFinalMemory());
         }
 
         yield return null;
