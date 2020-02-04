@@ -112,16 +112,50 @@ public class LevelEditor : MonoBehaviour
         mainCamera.transform.position = new Vector3(((float)width - 1) * 0.5f, ((float)height - 1) * 0.5f, -10);
     }
 
-    void LoadBoard(Board board)
+    void LoadBoard(Board b)
     {
+        board = new Board(b.width, b.height);
 
+        ClearNodes();
+
+        startingHealth = board.startingHealth = b.startingHealth;
+        healthPerGoal = board.healthPerGoal = b.healthPerGoal;
+
+        // create the red and blue signals
+        redSignal.gridCoordinates = board.redSignalStart = b.redSignalStart;
+        redSignal.transform.position = new Vector3(b.redSignalStart.x, b.redSignalStart.y, 0);
+
+        blueSignal.gridCoordinates = board.blueSignalStart = b.blueSignalStart;
+        blueSignal.transform.position = new Vector3(b.blueSignalStart.x, b.blueSignalStart.y, 0);
+
+        // place the nodes
+        for (int x = 0; x < b.width; x++) {
+            for (int y = 0; y < b.height; y++) {
+                if (!b.HasNode(new Vector2Int(x, y)))
+                    continue;
+
+                    PlaceNode(new Vector2Int(x, y));
+            }
+        }
+
+        // the goals
+        board.redGoals = b.redGoals;
+        board.blueGoals = b.blueGoals;
+
+        for (int i = 0; i < board.redGoals.Length; i++) {
+            redGoals[i].transform.position = new Vector3(b.redGoals[i].x, b.redGoals[i].y, 0);
+        }
+        for (int i = 0; i < board.blueGoals.Length; i++) {
+            blueGoals[i].transform.position = new Vector3(b.blueGoals[i].x, b.blueGoals[i].y, 0);
+        }
+
+        mainCamera.transform.position = new Vector3(((float)b.width - 1) * 0.5f, ((float)b.height - 1) * 0.5f, -10);
     }
 
     void GenerateMarkers()
     {
         // clear existing markers first
-        for (int i = markers.Count - 1; i >= 0; i--)
-        {
+        for (int i = markers.Count - 1; i >= 0; i--) {
             var marker = markers[i];
             markers.Remove(marker);
             Destroy(marker.gameObject);
@@ -132,24 +166,22 @@ public class LevelEditor : MonoBehaviour
         {
             for (int y = 0; y < height; y++)
             {
-                var marker = Instantiate(markerPrefab);
-                marker.transform.position = new Vector3(x, y, -4);
-                marker.gridCoordinates = new Vector2Int(x, y);
-                marker.transform.SetParent(markerHolder);
-                markers.Add(marker);
+                PlaceMarker(new Vector2Int(x, y));
             }
         }
     }
 
+    void PlaceMarker(Vector2Int gridCoordinates) {
+        var marker = Instantiate(markerPrefab);
+        marker.transform.position = new Vector3(gridCoordinates.x, gridCoordinates.y, -4);
+        marker.gridCoordinates = new Vector2Int(gridCoordinates.x, gridCoordinates.y);
+        marker.transform.SetParent(markerHolder);
+        markers.Add(marker);
+    }
+
     void GenerateNodes()
     {
-        // clear existing nodes first
-        for (int i = nodes.Count - 1; i >= 0; i--)
-        {
-            var node = nodes[i];
-            nodes.Remove(node);
-            Destroy(node.gameObject);
-        }
+        ClearNodes();
 
         // make grid
         for (int x = 0; x < width; x++)
@@ -158,6 +190,15 @@ public class LevelEditor : MonoBehaviour
             {
                 PlaceNode(new Vector2Int(x, y));
             }
+        }
+    }
+
+    void ClearNodes() {
+        // clear existing nodes first
+        for (int i = nodes.Count - 1; i >= 0; i--) {
+            var node = nodes[i];
+            nodes.Remove(node);
+            Destroy(node.gameObject);
         }
     }
 
@@ -170,6 +211,7 @@ public class LevelEditor : MonoBehaviour
         nodes.Add(node);
         board.AddNode(gridCoordinates);
     }
+
 
     void EraseNode(Vector2Int gridCoordinates)
     {
@@ -292,13 +334,9 @@ public class LevelEditor : MonoBehaviour
     }
 
     public void LoadBoard() {
-        /*string file = EditorUtility.OpenFilePanel("Select level.json", "", "json");
-        if (file.Length != 0) {
-            string levelJson = System.Text.Encoding.ASCII.GetString(File.ReadAllBytes(file));
-            board = BoardUtility.LoadFromJson(levelJson);
-
-            LoadBoard(board);
-        }*/
+        var boardPath = Path.Combine(Application.persistentDataPath, "Levels", "level.json");
+        board = BoardUtility.LoadFromJson(boardPath);
+        LoadBoard(board);
     }
 
     public void SaveBoard()
