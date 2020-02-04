@@ -1,10 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class LevelEditorButtons : MonoBehaviour
 {
+    public void Start() {
+        EchoSavePath();
+    }
+
     public void PlaceNode()
     {
         EventManager.Invoke(EventType.EditorToolChange, new EventDetails(Tool.Place));
@@ -35,6 +40,10 @@ public class LevelEditorButtons : MonoBehaviour
         EventManager.Invoke(EventType.EditorToolChange, new EventDetails(Tool.BlueGoal, number));
     }
 
+    public void Load() {
+        LevelEditor.instance.LoadBoard();
+    }
+
     public void Save()
     {
         LevelEditor.instance.SaveBoard();
@@ -62,6 +71,13 @@ public class LevelEditorButtons : MonoBehaviour
     {
         int health = int.Parse(str);
         LevelEditor.instance.SetHealthPerGoal(health);
+    }
+
+    private void EchoSavePath() {
+        Text text = gameObject.GetComponent<Text>();
+
+        if (text != null && text.text.Contains("save path"))
+            text.text = text.text.Replace("%s", Application.persistentDataPath);
     }
 
     public void MainMenu()

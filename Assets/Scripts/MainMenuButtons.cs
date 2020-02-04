@@ -15,6 +15,10 @@ public class MainMenuButtons : MonoBehaviour
         SceneManager.LoadScene("LevelEditor");
     }
 
+    public void BackToMainMenu() {
+        SceneManager.LoadScene("MainMenu");
+    }
+
     public void Quit()
     {
         Application.Quit();

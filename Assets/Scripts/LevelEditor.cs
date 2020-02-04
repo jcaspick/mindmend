@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+//using UnityEditor;
 using System.IO;
 
 public enum Tool
@@ -109,6 +110,11 @@ public class LevelEditor : MonoBehaviour
         GenerateNodes();
 
         mainCamera.transform.position = new Vector3(((float)width - 1) * 0.5f, ((float)height - 1) * 0.5f, -10);
+    }
+
+    void LoadBoard(Board board)
+    {
+
     }
 
     void GenerateMarkers()
@@ -283,6 +289,16 @@ public class LevelEditor : MonoBehaviour
     {
         tool = details.tool;
         goalIndex = details.intData;
+    }
+
+    public void LoadBoard() {
+        /*string file = EditorUtility.OpenFilePanel("Select level.json", "", "json");
+        if (file.Length != 0) {
+            string levelJson = System.Text.Encoding.ASCII.GetString(File.ReadAllBytes(file));
+            board = BoardUtility.LoadFromJson(levelJson);
+
+            LoadBoard(board);
+        }*/
     }
 
     public void SaveBoard()
