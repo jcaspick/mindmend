@@ -16,7 +16,7 @@ public class Connection : MonoBehaviour
         if (!GameSettings.instance.USE_PLACEHOLDER_CONNECTION)
         {
             visual = Instantiate(prefab);
-            visual.Create(a, b, angle);
+            visual.Create(a.transform.position, b.transform.position, angle);
             GetComponentInChildren<Renderer>().enabled = false;
         }
     }

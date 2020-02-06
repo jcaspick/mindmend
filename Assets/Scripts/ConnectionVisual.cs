@@ -8,20 +8,20 @@ public class ConnectionVisual : MonoBehaviour
     public GameObject redConnection;
     public GameObject neutralConnection;
 
-    private Node originNode;
+    private Vector3 originNode;
 
     public void Awake() {
         Reset();
     }
 
-    public void Create(Node startNode, Node endNode, float angle)
+    public void Create(Vector3 startNode, Vector3 endNode, float angle)
     {
         originNode = startNode;
 
-        gameObject.transform.position = startNode.transform.position; // start position
+        gameObject.transform.position = startNode; // start position
         gameObject.transform.rotation = Quaternion.Euler( new Vector3(gameObject.transform.rotation.x, gameObject.transform.rotation.y, angle - 180));
 
-        float distance = Vector3.Distance(startNode.transform.position, endNode.transform.position);
+        float distance = Vector3.Distance(startNode, endNode);
 
         SizeMask(gameObject.transform, distance);
     }
@@ -48,8 +48,6 @@ public class ConnectionVisual : MonoBehaviour
             if (health == 1) {
                 flicker.minWaitTime = 0;
                 flicker.maxWaitTime = 1.0f;
-
-                originNode.visual.LowHealth();
             }
         }
     }

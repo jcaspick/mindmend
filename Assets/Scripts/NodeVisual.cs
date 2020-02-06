@@ -13,8 +13,6 @@ public class NodeVisual : MonoBehaviour
     public Vector3 selectScale = new Vector3(0.1f, 0.1f, 0.1f);
     private Vector3 originalScale;
 
-    private GameObject activeNode;
-
     public void Awake() {
         Reset();
         originalScale = transform.localScale;
@@ -26,27 +24,21 @@ public class NodeVisual : MonoBehaviour
         switch (color) {
             case GameColor.Red:
                 redNode.SetActive(true);
-                activeNode = redNode;
                 break;
             case GameColor.Blue:
                 blueNode.SetActive(true);
-                activeNode = blueNode;
                 break;
             case GameColor.Neutral:
                 neutralNode.SetActive(true);
-                activeNode = neutralNode;
                 break;
             default:
                 inactiveNode.SetActive(true);
-                activeNode = inactiveNode;
                 break;
         }
     }
 
     public void LowHealth() {
-        GameObject mainNode = activeNode.transform.GetChild(0).gameObject;
-
-        Flicker flicker = mainNode.AddComponent<Flicker>();
+        Flicker flicker = gameObject.AddComponent<Flicker>();
         flicker.minWaitTime = 0;
         flicker.maxWaitTime = 2.0f;
     }
