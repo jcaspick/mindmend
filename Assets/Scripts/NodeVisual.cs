@@ -7,6 +7,7 @@ public class NodeVisual : MonoBehaviour
     // Order in array represents layer order
     public GameObject blueNode;
     public GameObject redNode;
+    public GameObject neutralNode;
     public GameObject inactiveNode;
 
     public Vector3 selectScale = new Vector3(0.1f, 0.1f, 0.1f);
@@ -30,6 +31,10 @@ public class NodeVisual : MonoBehaviour
             case GameColor.Blue:
                 blueNode.SetActive(true);
                 activeNode = blueNode;
+                break;
+            case GameColor.Neutral:
+                neutralNode.SetActive(true);
+                activeNode = neutralNode;
                 break;
             default:
                 inactiveNode.SetActive(true);

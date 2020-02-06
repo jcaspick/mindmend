@@ -6,13 +6,12 @@ public class ConnectionVisual : MonoBehaviour
 {
     public GameObject blueConnection;
     public GameObject redConnection;
+    public GameObject neutralConnection;
 
     private Node originNode;
 
     public void Awake() {
-        foreach (Transform child in gameObject.transform) {
-            child.gameObject.SetActive(false);
-        }
+        Reset();
     }
 
     public void Create(Node startNode, Node endNode, float angle)
@@ -57,15 +56,24 @@ public class ConnectionVisual : MonoBehaviour
 
     public void SetColor(GameColor color)
     {
+        Reset();
+
         switch (color) {
             case GameColor.Red:
                 redConnection.SetActive(true);
-                GameObject.Destroy(blueConnection);
                 break;
             case GameColor.Blue:
                 blueConnection.SetActive(true);
-                GameObject.Destroy(redConnection);
                 break;
+            case GameColor.Neutral:
+                neutralConnection.SetActive(true);
+                break;
+        }
+    }
+
+    private void Reset() {
+        foreach (Transform child in gameObject.transform) {
+            child.gameObject.SetActive(false);
         }
     }
 
