@@ -25,6 +25,7 @@ public class GameController : MonoBehaviour
 {
     public GameObject mainCamera;
     public ClickableSpace clickableSpacePrefab;
+    public ConnectionPreview connectionPreview;
 
     public Node nodePrefab;
     public Connection connectionPrefab;
@@ -56,10 +57,14 @@ public class GameController : MonoBehaviour
     private int nextBlueGoal = 0;
     private Node firstClicked;
     private Node secondClicked;
+    private Node underMouse;
 
     void Start()
     {
-        EventManager.AddListener(EventType.SpaceClicked, HandleSpaceClicked);
+        //EventManager.AddListener(EventType.SpaceClicked, HandleSpaceClicked);
+        EventManager.AddListener(EventType.SpaceMouseDown, HandleSpaceMouseDown);
+        EventManager.AddListener(EventType.SpaceMouseEnter, HandleSpaceMouseEnter);
+        EventManager.AddListener(EventType.SpaceMouseExit, HandleSpaceMouseExit);
 
         // load the level
         var boardPath = Path.Combine(Application.persistentDataPath, "Levels", "level.json");
@@ -140,6 +145,40 @@ public class GameController : MonoBehaviour
         }
 
         mainCamera.transform.position = new Vector3(((float)width - 1) * 0.5f, ((float)height - 1) * 0.5f, -10);
+        connectionPreview.gameObject.SetActive(false);
+    }
+
+    void Update()
+    {
+        if (phase == GamePhase.SelectEnd)
+        {
+            if (underMouse != null && IsValidSecondNode(underMouse))
+            {
+                connectionPreview.gameObject.SetActive(true);
+                connectionPreview.SetTarget(underMouse.transform.position);
+            }
+            else
+            {
+                connectionPreview.gameObject.SetActive(false);
+            }
+
+            if (Input.GetMouseButtonUp(0))
+            {
+                if (underMouse != null && IsValidSecondNode(underMouse))
+                {
+                    firstClicked.Deselect();
+                    MakeConnection(firstClicked, underMouse);
+                    phase = GamePhase.SignalsMove;
+                    StartCoroutine(HandleSignalMovement(currentPlayer));
+                } else
+                {
+                    firstClicked = null;
+                    phase = GamePhase.SelectStart;
+                }
+
+                connectionPreview.gameObject.SetActive(false);
+            }
+        }
     }
 
     void RevealGoal(int i, GameColor color)
@@ -166,27 +205,66 @@ public class GameController : MonoBehaviour
         }
     }
 
-    void HandleSpaceClicked(EventDetails details)
+    void HandleSpaceMouseDown(EventDetails details)
     {
-        switch (phase)
-        {
-            case GamePhase.SelectStart:
-                ChooseFirstNode(GetNodeAtCoordinates(details.coordinates));
-                break;
-            case GamePhase.SelectEnd:
-                ChooseSecondNode(GetNodeAtCoordinates(details.coordinates));
-                break;
-        }
-    }
-
-    void ChooseFirstNode(Node node)
-    {
-        if (IsValidFirstNode(node))
+        var node = GetNodeAtCoordinates(details.coordinates);
+        if (phase == GamePhase.SelectStart && IsValidFirstNode(node))
         {
             firstClicked = node;
             node.SetColor(currentPlayer);
             node.Select();
             phase = GamePhase.SelectEnd;
+
+            connectionPreview.SetOrigin(node.transform.position);
+            connectionPreview.SetTarget(node.transform.position);
+        }
+    }
+
+    void HandleSpaceMouseEnter(EventDetails details)
+    {
+        var node = GetNodeAtCoordinates(details.coordinates);
+        underMouse = node;
+        if (phase == GamePhase.SelectStart && IsValidFirstNode(node))
+            node.Select();
+        if (phase == GamePhase.SelectEnd && IsValidSecondNode(node))
+            node.Select();
+    }
+
+    void HandleSpaceMouseExit(EventDetails details)
+    {
+        var node = GetNodeAtCoordinates(details.coordinates);
+        underMouse = null;
+        node.Deselect();
+    }
+
+    void MakeConnection(Node start, Node end)
+    {
+        // instantiate and set position and orientation
+        var connection = Instantiate(connectionPrefab);
+        connection.transform.position = start.transform.position;
+        float angle = Mathf.Rad2Deg * Mathf.Atan2(end.gridCoordinates.y - start.gridCoordinates.y,
+            end.gridCoordinates.x - start.gridCoordinates.x);
+        connection.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
+        // set game state
+        connection.a = start;
+        connection.b = end;
+        connection.health = TotalConnectionHealth();
+        start.connections.Add(connection);
+        end.connections.Add(connection);
+
+        connections.Add(connection);
+
+        // create visual object
+        connection.CreateVisuals(connectionVisualPrefab, angle);
+        connection.SetColor(currentPlayer);
+        start.SetColor(currentPlayer);
+        end.SetColor(currentPlayer);
+
+        // legacy cruft
+        if (start.IsDiagonal(end))
+        {
+            connection.transform.localScale = new Vector3(1.414f, 1.0f, 1.0f);
         }
     }
 
@@ -197,46 +275,6 @@ public class GameController : MonoBehaviour
         if (currentPlayer == GameColor.Blue && node.gridCoordinates == blueSignal.gridCoordinates)
             return true;
         return (node.color == currentPlayer && HasLegalMove(node));
-    }
-
-    void ChooseSecondNode(Node node)
-    {
-        if (IsValidSecondNode(node))
-        {
-            secondClicked = node;
-            firstClicked.Deselect();
-        } else
-        {
-            return;
-        }
-
-        var connection = Instantiate(connectionPrefab);
-        connection.transform.position = firstClicked.transform.position;
-        float angle = Mathf.Rad2Deg * Mathf.Atan2(secondClicked.gridCoordinates.y - firstClicked.gridCoordinates.y,
-            secondClicked.gridCoordinates.x - firstClicked.gridCoordinates.x);
-        connection.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-
-        connection.a = firstClicked;
-        connection.b = secondClicked;
-        connection.health = TotalConnectionHealth();
-
-        connection.CreateVisuals(connectionVisualPrefab, angle);
-
-        if (firstClicked.IsDiagonal(secondClicked))
-        {
-            connection.transform.localScale = new Vector3(1.414f, 1.0f, 1.0f);
-        }
-
-        connection.SetColor(currentPlayer);
-
-        connections.Add(connection);
-        firstClicked.connections.Add(connection);
-        secondClicked.connections.Add(connection);
-        firstClicked.SetColor(currentPlayer);
-        secondClicked.SetColor(currentPlayer);
-
-        phase = GamePhase.SignalsMove;
-        StartCoroutine(HandleSignalMovement(currentPlayer));
     }
 
     bool IsValidSecondNode(Node node)

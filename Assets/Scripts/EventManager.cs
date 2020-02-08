@@ -37,6 +37,10 @@ public class EventDetails
 public enum EventType
 {
     SpaceClicked,
+    SpaceMouseDown,
+    SpaceMouseUp,
+    SpaceMouseEnter,
+    SpaceMouseExit,
     EditorMarkerEnter,
     EditorMarkerExit,
     EditorMarkerClick,
