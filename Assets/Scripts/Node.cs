@@ -11,6 +11,13 @@ public class Node : MonoBehaviour
     public List<Connection> connections;
     public GameColor color;
 
+    Vector3 startScale;
+
+    void Start()
+    {
+        startScale = transform.localScale;
+    }
+
     public void CreateVisuals(NodeVisual prefab)
     {
         if (!GameSettings.instance.USE_PLACEHOLDER_NODE)
@@ -53,7 +60,7 @@ public class Node : MonoBehaviour
         if (GameSettings.instance.USE_PLACEHOLDER_NODE)
         {
             var currentScale = transform.localScale;
-            transform.localScale = currentScale * 2;
+            transform.localScale = startScale * 2;
         } else
         {
             visual.Select();
@@ -65,7 +72,7 @@ public class Node : MonoBehaviour
         if (GameSettings.instance.USE_PLACEHOLDER_NODE)
         {
             var currentScale = transform.localScale;
-            transform.localScale = currentScale * 0.5f;
+            transform.localScale = startScale;
         } else
         {
             visual.Deselect();
@@ -117,5 +124,36 @@ public static class NodeExtensions
         result.Add(new Vector2Int(a.x + 1, a.y - 1));
 
         return result;
+    }
+
+    public static List<Node> GetNeighbors(this Node self)
+    {
+        var result = new List<Node>();
+
+        foreach (var connection in self.connections)
+        {
+            if (connection.a == self)
+                result.Add(connection.b);
+            else
+                result.Add(connection.a);
+        }
+
+        return result;
+    }
+
+    public static Connection GetConnection(this Node self, Node other)
+    {
+        if (!self.IsNeighbor(other))
+            return null;
+
+        foreach (var connection in self.connections)
+        {
+            if (connection.a == self && connection.b == other)
+                return connection;
+            else if (connection.b == self && connection.a == other)
+                return connection;
+        }
+
+        return null;
     }
 }

@@ -594,7 +594,7 @@ MonoBehaviour:
     type: 3}
   goalVisualPrefab: {fileID: 3507309492613047085, guid: cda2fde1d227d4b458c0ea5b27667ece,
     type: 3}
-  maxConnectionHealth: 5
+  baseConnectionHealth: 0
   connectionHealthPerGoal: 2
 --- !u!4 &935538931
 Transform:

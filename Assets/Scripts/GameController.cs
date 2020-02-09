@@ -37,7 +37,7 @@ public class GameController : MonoBehaviour
     public SignalVisual signalVisualPrefab;
     public GoalVisual goalVisualPrefab;
 
-    public int maxConnectionHealth;
+    public int baseConnectionHealth;
     public int connectionHealthPerGoal;
 
     private Transform nodeHolder;
@@ -79,7 +79,7 @@ public class GameController : MonoBehaviour
             board = BoardUtility.LoadFromJson(boardPath);
         }
 
-        maxConnectionHealth = board.startingHealth;
+        baseConnectionHealth = board.startingHealth;
         connectionHealthPerGoal = board.healthPerGoal;
 
         // initialize some stuff
@@ -169,7 +169,9 @@ public class GameController : MonoBehaviour
                     firstClicked.Deselect();
                     MakeConnection(firstClicked, underMouse);
                     phase = GamePhase.SignalsMove;
-                    StartCoroutine(HandleSignalMovement(currentPlayer));
+                    var signal = currentPlayer == GameColor.Red ? redSignal : blueSignal;
+                    var path = Pathfinder.GetPath(GetNodeAtCoordinates(signal.gridCoordinates), underMouse);
+                    StartCoroutine(HandleSignalMovement(currentPlayer, path));
                 } else
                 {
                     firstClicked = null;
@@ -305,60 +307,19 @@ public class GameController : MonoBehaviour
         return null;
     }
 
-    IEnumerator HandleSignalMovement(GameColor color)
+    IEnumerator HandleSignalMovement(GameColor color, List<Node> path)
     {
-        yield return null;
-
         var signal = color == GameColor.Red ? redSignal : blueSignal;
-        List<Node> visited = new List<Node>();
 
-        while (true)
+        for (int i = 0; i < path.Count - 1; i++)
         {
-            var currentNode = GetNodeAtCoordinates(signal.gridCoordinates);
-            visited.Add(currentNode);
-            var connections = currentNode.connections;
-
-            connections.Sort((a, b) => { return a.health < b.health ? 1 : -1; });
-            if (connections.Count == 0)
-            {
-                break;
-            }
-
-            Node destination = null;
-
-            foreach (var connection in connections)
-            {
-                if (connection.a != currentNode)
-                {
-                    if (visited.Contains(connection.a))
-                        continue;
-                    else
-                    {
-                        destination = connection.a;
-                        break;
-                    }
-                }
-                else if (connection.b != currentNode)
-                {
-                    if (visited.Contains(connection.b))
-                        continue;
-                    else
-                    {
-                        destination = connection.b;
-                        break;
-                    }
-                }
-            }
-
-            if (destination == null)
-                break;
-            else
-            {
-                signal.gridCoordinates = destination.gridCoordinates;
-                yield return StartCoroutine(TweenSignal(signal, currentNode, destination));
-            }
-
-            yield return null;
+            var start = path[i];
+            var end = path[i + 1];
+            yield return StartCoroutine(TweenSignal(signal, start, end));
+            signal.gridCoordinates = end.gridCoordinates;
+            var connection = start.GetConnection(end);
+            connection.SetHealthPercentage(1.0f);
+            connection.health = TotalConnectionHealth();
         }
 
         phase = GamePhase.CheckWinConditions;
@@ -511,6 +472,6 @@ public class GameController : MonoBehaviour
 
     int TotalConnectionHealth()
     {
-        return maxConnectionHealth + (connectionHealthPerGoal * (nextRedGoal + nextBlueGoal));
+        return baseConnectionHealth + (connectionHealthPerGoal * (nextRedGoal + nextBlueGoal));
     }
 }
