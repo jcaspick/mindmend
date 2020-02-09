@@ -37,6 +37,8 @@ public class GameController : MonoBehaviour
     public SignalVisual signalVisualPrefab;
     public GoalVisual goalVisualPrefab;
 
+    public NodeAudio nodeAudioPrefab;
+
     public int baseConnectionHealth;
     public int connectionHealthPerGoal;
 
@@ -113,6 +115,9 @@ public class GameController : MonoBehaviour
         int width = board.width;
         int height = board.height;
 
+        // build the notes array, one for each spot on the board
+        NoteUtility.Setup(width, height);
+
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -132,6 +137,7 @@ public class GameController : MonoBehaviour
                 node.gridCoordinates = new Vector2Int(x, y);
                 node.transform.SetParent(nodeHolder);
                 node.CreateVisuals(nodeVisualPrefab);
+                node.CreateAudio(nodeAudioPrefab);
 
                 if (node.gridCoordinates == blueSignal.gridCoordinates)
                     node.SetColor(GameColor.Blue);

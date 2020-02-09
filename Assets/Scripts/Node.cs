@@ -5,6 +5,7 @@ using UnityEngine;
 public class Node : MonoBehaviour
 {
     public NodeVisual visual;
+    public NodeAudio audio;
 
     public Vector2Int gridCoordinates;
     public bool isAlive;
@@ -26,6 +27,11 @@ public class Node : MonoBehaviour
             visual.transform.position = new Vector3(gridCoordinates.x, gridCoordinates.y, 0);
             GetComponentInChildren<Renderer>().enabled = false;
         }
+    }
+
+    public void CreateAudio(NodeAudio prefab) {
+        audio = Instantiate(prefab);
+        audio.transform.position = new Vector3(gridCoordinates.x, gridCoordinates.y, 0);
     }
 
     public void SetColor(GameColor color)
@@ -52,6 +58,12 @@ public class Node : MonoBehaviour
         else
         {
             visual.SetColor(color);
+        }
+
+        if (color == GameColor.Red || color == GameColor.Blue) {
+            audio.Active();
+        } else {
+            audio.Inactive();
         }
     }
 

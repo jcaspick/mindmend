@@ -10,6 +10,7 @@ public class GameSettings : MonoBehaviour
     public bool USE_PLACEHOLDER_CONNECTION = false;
     public bool USE_PLACEHOLDER_SIGNAL = false;
     public bool USE_PLACEHOLDER_GOAL = false;
+    public bool AUDIO_SYNTH_MODE = false;
 
     void Awake()
     {
