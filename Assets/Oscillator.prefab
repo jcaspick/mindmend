@@ -148,7 +148,7 @@ MonoBehaviour:
   saw: 0
   saw2: 0
   gain: 0
-  volume: 0.01
+  volume: 0.015
   frequencies:
   - 0
   - 0

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ConnectionVisual : MonoBehaviour
 {
+    private GameObject activeConnection;
     public GameObject blueConnection;
     public GameObject redConnection;
     public GameObject neutralConnection;
@@ -33,10 +34,8 @@ public class ConnectionVisual : MonoBehaviour
 
     public void SetHealthPercentage(int health, float healthMetric)
     {
-        GameObject connection = gameObject.transform.GetChild(0).gameObject;
-
-        if (health <= 3) {
-            GameObject mainConnection = connection.transform.GetChild(0).gameObject;
+        if (activeConnection && health <= 3) {
+            GameObject mainConnection = activeConnection.transform.GetChild(0).gameObject;
 
             Flicker flicker = mainConnection.GetComponent<Flicker>();
             if(flicker == null) {
@@ -59,12 +58,18 @@ public class ConnectionVisual : MonoBehaviour
         switch (color) {
             case GameColor.Red:
                 redConnection.SetActive(true);
+                activeConnection = redConnection;
                 break;
             case GameColor.Blue:
                 blueConnection.SetActive(true);
+                activeConnection = blueConnection;
                 break;
             case GameColor.Neutral:
                 neutralConnection.SetActive(true);
+                activeConnection = neutralConnection;
+                break;
+            default:
+                activeConnection = null;
                 break;
         }
     }
