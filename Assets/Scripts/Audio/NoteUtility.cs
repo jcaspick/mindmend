@@ -7,6 +7,9 @@ public static class NoteUtility
 	public static double[] notes;
 	private static int columns;
 
+    public static int minFreq = 65;
+    public static int maxFreq = 900;
+
 	public static void Setup(int width, int height) {
 		if (notes == null) {
 			notes = new double[width * height];
@@ -16,7 +19,7 @@ public static class NoteUtility
 		BuildFreqArray();
     }
 
-    private static void BuildFreqArray() {
+	private static void BuildFreqArray() {
 		string[] scale = A_pent;
 		int octaves = noteFreq["C"].Length;
 
@@ -27,7 +30,7 @@ public static class NoteUtility
 
 				double freq = noteFreq[scale[i]][oct];
 
-                if (freq > 50 && freq < 1300) { // listenable range
+				if (freq > minFreq && freq < maxFreq) { // listenable range
 					freqs.Add(freq);
 				}
 			}

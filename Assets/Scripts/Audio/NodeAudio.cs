@@ -4,35 +4,35 @@ using UnityEngine;
 
 public class NodeAudio : MonoBehaviour
 {
-    public Oscillator oscillator;
-    public bool debug;
+    private Synth synth;
 
-    // Start is called before the first frame update
-    void Start()
+    public Voice nodePluck;
+    public Voice nodeSustain;
+
+    void Awake()
     {
-        oscillator = Instantiate(oscillator);
-        oscillator.gameObject.transform.parent = gameObject.transform;
-        oscillator.gameObject.transform.position = gameObject.transform.position;
-
-        oscillator.gain = 0;
-        oscillator.frequency = NoteUtility.GetNoteForPosition(gameObject.transform.position.x, gameObject.transform.position.y);
+        synth = gameObject.GetComponent<Synth>();    
     }
 
-    public void Active() {
+    public void Pluck() {
         if (GameSettings.instance.AUDIO_SYNTH_MODE) {
-            oscillator.GetComponent<AudioSource>().Play();
-            oscillator.gain = oscillator.volume;
+            synth.enabled = true;
+            synth.PlayVoices(new List<Voice> { nodePluck });
         }
+    }
 
-        if(debug) {
-            Debug.Log("Oscillator at: " + oscillator.transform.position.x + ", " + oscillator.transform.position.y + " is playing at " + oscillator.frequency);
+    public void Sustain() {
+        if (GameSettings.instance.AUDIO_SYNTH_MODE) {
+            synth.enabled = true;
+            synth.PlayVoices(new List<Voice> { nodePluck, nodeSustain });
+
         }
     }
 
     public void Inactive() {
         if (GameSettings.instance.AUDIO_SYNTH_MODE) {
-            oscillator.GetComponent<AudioSource>().Stop();
-            oscillator.gain = 0.0f;
+            synth.StopVoices();
+            synth.enabled = false;
         }
     }
 }

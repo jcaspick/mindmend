@@ -30,7 +30,9 @@ public class Node : MonoBehaviour
     }
 
     public void CreateAudio(NodeAudio prefab) {
+        audio = prefab;
         audio = Instantiate(prefab);
+        audio.transform.parent = GameObject.Find("Audio").transform;
         audio.transform.position = new Vector3(gridCoordinates.x, gridCoordinates.y, 0);
     }
 
@@ -44,26 +46,20 @@ public class Node : MonoBehaviour
 
             switch (color)
             {
-                case GameColor.Neutral:
-                    renderer.material = Resources.Load("grey") as Material;
-                    break;
                 case GameColor.Red:
                     renderer.material = Resources.Load("red") as Material;
                     break;
                 case GameColor.Blue:
                     renderer.material = Resources.Load("blue") as Material;
                     break;
+                default:
+                    renderer.material = Resources.Load("grey") as Material;
+                    break;
             }
         }
         else
         {
             visual.SetColor(color);
-        }
-
-        if (color == GameColor.Red || color == GameColor.Blue) {
-            audio.Active();
-        } else {
-            audio.Inactive();
         }
     }
 
@@ -167,5 +163,9 @@ public static class NodeExtensions
         }
 
         return null;
+    }
+
+    public static bool IsActive(this Node self) {
+        return self.color != GameColor.Neutral ? true : false;
     }
 }

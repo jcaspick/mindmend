@@ -5,6 +5,7 @@ using UnityEngine;
 public class Goal : MonoBehaviour
 {
     public GoalVisual visual;
+    public GoalAudio audio;
 
     public Vector2Int gridCoordinates;
     public GameColor color;
@@ -22,6 +23,13 @@ public class Goal : MonoBehaviour
         }
     }
 
+    public void CreateAudio(GoalAudio prefab) {
+        audio = prefab;
+        audio = Instantiate(prefab);
+        audio.transform.parent = GameObject.Find("Audio").transform;
+        audio.transform.position = new Vector3(gridCoordinates.x, gridCoordinates.y, 0);
+    }
+
     public void Achieve()
     {
         if (GameSettings.instance.USE_PLACEHOLDER_GOAL)
@@ -30,6 +38,7 @@ public class Goal : MonoBehaviour
         } else
         {
             visual.Achieve(color);
+            audio.Achieve();
         }
     }
 

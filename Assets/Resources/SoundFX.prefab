@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &2999209003776140851
+--- !u!1 &7500569186762494367
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,24 +8,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2923546832381872407}
-  - component: {fileID: 5613483660624164180}
-  - component: {fileID: 2756382593112309107}
-  - component: {fileID: 84954761038457395}
+  - component: {fileID: 7500569186762494365}
+  - component: {fileID: 7500569186762494366}
   m_Layer: 0
-  m_Name: Oscillator
+  m_Name: SoundFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2923546832381872407
+--- !u!4 &7500569186762494365
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2999209003776140851}
+  m_GameObject: {fileID: 7500569186762494367}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -33,13 +31,13 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!82 &5613483660624164180
+--- !u!82 &7500569186762494366
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2999209003776140851}
+  m_GameObject: {fileID: 7500569186762494367}
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
@@ -129,57 +127,3 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &2756382593112309107
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2999209003776140851}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 434bab0313c03422a8719d8ebe54d57e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  frequency: 440
-  sine: 1
-  square: 0
-  triangle: 0
-  saw: 0
-  saw2: 0
-  gain: 0
-  volume: 0.015
-  frequencies:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  freqIndex: 0
-  mixType: 0
---- !u!164 &84954761038457395
-AudioReverbFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2999209003776140851}
-  m_Enabled: 1
-  m_DryLevel: 0
-  m_Room: 0
-  m_RoomHF: 0
-  m_DecayTime: 1
-  m_DecayHFRatio: 0.5
-  m_ReflectionsLevel: -10000
-  m_ReverbLevel: 0
-  m_ReverbDelay: 0.04
-  m_Diffusion: 100
-  m_Density: 100
-  m_HFReference: 5000
-  m_RoomLF: 0
-  m_LFReference: 250
-  m_ReflectionsDelay: 0
-  m_ReverbPreset: 27

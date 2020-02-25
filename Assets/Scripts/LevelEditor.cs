@@ -128,13 +128,16 @@ public class LevelEditor : MonoBehaviour
         blueSignal.gridCoordinates = board.blueSignalStart = b.blueSignalStart;
         blueSignal.transform.position = new Vector3(b.blueSignalStart.x, b.blueSignalStart.y, 0);
 
+        width = b.width;
+        height = b.height;
+
         // place the nodes
         for (int x = 0; x < b.width; x++) {
             for (int y = 0; y < b.height; y++) {
                 if (!b.HasNode(new Vector2Int(x, y)))
                     continue;
 
-                    PlaceNode(new Vector2Int(x, y));
+                PlaceNode(new Vector2Int(x, y));
             }
         }
 
@@ -148,6 +151,8 @@ public class LevelEditor : MonoBehaviour
         for (int i = 0; i < board.blueGoals.Length; i++) {
             blueGoals[i].transform.position = new Vector3(b.blueGoals[i].x, b.blueGoals[i].y, 0);
         }
+
+        GenerateMarkers();
 
         mainCamera.transform.position = new Vector3(((float)b.width - 1) * 0.5f, ((float)b.height - 1) * 0.5f, -10);
     }

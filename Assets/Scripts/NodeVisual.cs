@@ -51,7 +51,9 @@ public class NodeVisual : MonoBehaviour
 
     public void Select()
     {
-        gameObject.transform.localScale = transform.localScale + selectScale;
+        if (gameObject.transform.localScale == originalScale) {
+            gameObject.transform.localScale = transform.localScale + selectScale;
+        }
     }
 
     public void Deselect()

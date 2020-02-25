@@ -38,6 +38,7 @@ public class GameController : MonoBehaviour
     public GoalVisual goalVisualPrefab;
 
     public NodeAudio nodeAudioPrefab;
+    public GoalAudio goalAudioPrefab;
 
     public int baseConnectionHealth;
     public int connectionHealthPerGoal;
@@ -108,15 +109,15 @@ public class GameController : MonoBehaviour
         blueSignal.CreateVisuals(signalVisualPrefab);
         blueSignal.SetColor(GameColor.Blue);
 
+        // build the notes array, one for each spot on the board
+        NoteUtility.Setup(board.width, board.height);
+
         // reveal the first red and blue goals
         RevealGoal(0, GameColor.Red);
         RevealGoal(0, GameColor.Blue);
 
         int width = board.width;
         int height = board.height;
-
-        // build the notes array, one for each spot on the board
-        NoteUtility.Setup(width, height);
 
         for (int x = 0; x < width; x++)
         {
@@ -198,8 +199,10 @@ public class GameController : MonoBehaviour
             goal.transform.position = new Vector3(board.redGoals[i].x, board.redGoals[i].y, 0);
             goal.transform.SetParent(nodeHolder);
             goal.CreateVisuals(goalVisualPrefab);
+            goal.CreateAudio(goalAudioPrefab);
             goal.SetColor(GameColor.Red);
             redGoals[i] = goal;
+
         }
         else if (color == GameColor.Blue)
         {
@@ -208,6 +211,7 @@ public class GameController : MonoBehaviour
             goal.transform.position = new Vector3(board.blueGoals[i].x, board.blueGoals[i].y, 0);
             goal.transform.SetParent(nodeHolder);
             goal.CreateVisuals(goalVisualPrefab);
+            goal.CreateAudio(goalAudioPrefab);
             goal.SetColor(GameColor.Blue);
             blueGoals[i] = goal;
         }
@@ -317,8 +321,7 @@ public class GameController : MonoBehaviour
     {
         var signal = color == GameColor.Red ? redSignal : blueSignal;
 
-        for (int i = 0; i < path.Count - 1; i++)
-        {
+        for (int i = 0; i < path.Count - 1; i++) {
             var start = path[i];
             var end = path[i + 1];
             yield return StartCoroutine(TweenSignal(signal, start, end));
@@ -326,6 +329,12 @@ public class GameController : MonoBehaviour
             var connection = start.GetConnection(end);
             connection.SetHealthPercentage(1.0f);
             connection.health = TotalConnectionHealth();
+
+            if (i == path.Count - 2) {
+                end.audio.Sustain();
+            } else {
+                end.audio.Pluck();
+            }
         }
 
         phase = GamePhase.CheckWinConditions;

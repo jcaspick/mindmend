@@ -54,22 +54,15 @@ public class GoalVisual : MonoBehaviour
     }
 
     public IEnumerator Grow() {
-        float timer = 0;
+        while (maxScale > transform.localScale.x) {
+            gameObject.transform.localScale += new Vector3(1, 1, 1) * Time.deltaTime * growFactor;
 
-        while (true)
-        {
-            while (maxScale > transform.localScale.x) {
-                timer += Time.deltaTime;
-                gameObject.transform.localScale += new Vector3(1, 1, 1) * Time.deltaTime * growFactor;
-
-                yield return null;
-            }
-            yield return new WaitForSeconds(waitTime);
+            yield return null;
         }
+        yield return new WaitForSeconds(waitTime);
     }
 
     public IEnumerator FadeOut(GameObject goal) {
-        // fade out
         for (float f = 0.0f; f < 1.0f; f += Time.deltaTime / fadeSpeed) {
             goal.GetComponent<SpriteRenderer>().material.color = new Color(1.0f, 1.0f, 1.0f, 1.0f - f);
             yield return null;
