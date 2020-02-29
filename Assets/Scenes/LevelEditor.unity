@@ -2848,9 +2848,9 @@ MonoBehaviour:
   markerPrefab: {fileID: 6927993840807365287, guid: aa830720b5834574183caf90416b817e,
     type: 3}
   mainCamera: {fileID: 519420028}
-  nodeVisualPrefab: {fileID: 899832373975481722, guid: c4903ab10d7681942be793339a56654b,
+  nodePrefab: {fileID: 899832373975481722, guid: c4903ab10d7681942be793339a56654b,
     type: 3}
-  signalVisualPrefab: {fileID: 2729054478565643912, guid: 9a35e143d9fbb5b4a86cdc853e976b82,
+  signalPrefab: {fileID: 2729054478565643912, guid: 9a35e143d9fbb5b4a86cdc853e976b82,
     type: 3}
   goalPrefab: {fileID: 9017426388501971955, guid: 2f624328c184f0e4b8bed53662ee4083,
     type: 3}
@@ -2892,10 +2892,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a4472cf2858e9040be35fd4c6c62b4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  USE_PLACEHOLDER_NODE: 1
-  USE_PLACEHOLDER_CONNECTION: 1
-  USE_PLACEHOLDER_SIGNAL: 1
-  USE_PLACEHOLDER_GOAL: 1
+  graphics: {fileID: 11400000, guid: 01b05e171a1b92f4b854476469659126, type: 2}
+  AUDIO_SYNTH_MODE: 0
 --- !u!1 &936426855
 GameObject:
   m_ObjectHideFlags: 0

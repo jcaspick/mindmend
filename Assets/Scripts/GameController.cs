@@ -43,8 +43,6 @@ public class GameController : MonoBehaviour
     private Transform nodeHolder;
     private Transform clickableHolder;
 
-    private GraphicSet graphics;
-
     private Board board;
     private List<Node> nodes;
     private Signal redSignal;
@@ -63,8 +61,6 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
-        graphics = GameSettings.instance.graphics;
-
         //EventManager.AddListener(EventType.SpaceClicked, HandleSpaceClicked);
         EventManager.AddListener(EventType.SpaceMouseDown, HandleSpaceMouseDown);
         EventManager.AddListener(EventType.SpaceMouseEnter, HandleSpaceMouseEnter);
@@ -100,14 +96,14 @@ public class GameController : MonoBehaviour
         redSignal.gridCoordinates = board.redSignalStart;
         redSignal.transform.position = new Vector3(board.redSignalStart.x, board.redSignalStart.y, 0);
         redSignal.transform.SetParent(nodeHolder);
-        redSignal.CreateVisuals(graphics.signal);
+        redSignal.CreateVisuals();
         redSignal.SetColor(GameColor.Red);
 
         blueSignal = Instantiate(signalPrefab);
         blueSignal.gridCoordinates = board.blueSignalStart;
         blueSignal.transform.position = new Vector3(board.blueSignalStart.x, board.blueSignalStart.y, 0);
         blueSignal.transform.SetParent(nodeHolder);
-        blueSignal.CreateVisuals(graphics.signal);
+        blueSignal.CreateVisuals();
         blueSignal.SetColor(GameColor.Blue);
 
         // build the notes array, one for each spot on the board
@@ -138,7 +134,7 @@ public class GameController : MonoBehaviour
                 node.transform.position = new Vector3(x, y, 0);
                 node.gridCoordinates = new Vector2Int(x, y);
                 node.transform.SetParent(nodeHolder);
-                node.CreateVisuals(graphics.node);
+                node.CreateVisuals();
                 node.CreateAudio(nodeAudioPrefab);
 
                 if (node.gridCoordinates == blueSignal.gridCoordinates)
@@ -199,7 +195,7 @@ public class GameController : MonoBehaviour
             goal.gridCoordinates = board.redGoals[i];
             goal.transform.position = new Vector3(board.redGoals[i].x, board.redGoals[i].y, 0);
             goal.transform.SetParent(nodeHolder);
-            goal.CreateVisuals(graphics.goal);
+            goal.CreateVisuals();
             goal.CreateAudio(goalAudioPrefab);
             goal.SetColor(GameColor.Red);
             redGoals[i] = goal;
@@ -211,7 +207,7 @@ public class GameController : MonoBehaviour
             goal.gridCoordinates = board.blueGoals[i];
             goal.transform.position = new Vector3(board.blueGoals[i].x, board.blueGoals[i].y, 0);
             goal.transform.SetParent(nodeHolder);
-            goal.CreateVisuals(graphics.goal);
+            goal.CreateVisuals();
             goal.CreateAudio(goalAudioPrefab);
             goal.SetColor(GameColor.Blue);
             blueGoals[i] = goal;
@@ -269,7 +265,7 @@ public class GameController : MonoBehaviour
         connections.Add(connection);
 
         // create visual object
-        connection.CreateVisuals(graphics.connection, angle);
+        connection.CreateVisuals(angle);
         connection.SetColor(currentPlayer);
         start.SetColor(currentPlayer);
         end.SetColor(currentPlayer);

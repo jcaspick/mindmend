@@ -25,8 +25,8 @@ public class LevelEditor : MonoBehaviour
     public EditorMarker markerPrefab;
     public GameObject mainCamera;
 
-    public Node nodeVisualPrefab;
-    public Signal signalVisualPrefab;
+    public Node nodePrefab;
+    public Signal signalPrefab;
     public Goal goalPrefab;
 
     private Board board;
@@ -58,18 +58,22 @@ public class LevelEditor : MonoBehaviour
         for (int i = 0; i < 5; i++)
         {
             redGoals[i] = Instantiate(goalPrefab);
+            redGoals[i].CreateVisuals();
             redGoals[i].SetColor(GameColor.Red);
         }
         for (int i = 0; i < 5; i++)
         {
             blueGoals[i] = Instantiate(goalPrefab);
+            blueGoals[i].CreateVisuals();
             blueGoals[i].SetColor(GameColor.Blue);
         }
 
-        redSignal = Instantiate(signalVisualPrefab);
+        redSignal = Instantiate(signalPrefab);
+        redSignal.CreateVisuals();
         redSignal.SetColor(GameColor.Red);
 
-        blueSignal = Instantiate(signalVisualPrefab);
+        blueSignal = Instantiate(signalPrefab);
+        blueSignal.CreateVisuals();
         blueSignal.SetColor(GameColor.Blue);
 
         markerHolder = new GameObject("markers").transform;
@@ -209,12 +213,18 @@ public class LevelEditor : MonoBehaviour
 
     void PlaceNode(Vector2Int gridCoordinates)
     {
-        var node = Instantiate(nodeVisualPrefab);
+        var existing = GetNodeAtCoordinates(gridCoordinates);
+        if (existing != null)
+            return;
+
+        var node = Instantiate(nodePrefab);
         node.transform.SetParent(markerHolder);
         node.transform.localPosition = new Vector3(gridCoordinates.x, gridCoordinates.y, 10);
         node.gridCoordinates = gridCoordinates;
         nodes.Add(node);
         board.AddNode(gridCoordinates);
+        node.CreateVisuals();
+        node.SetColor(GameColor.Neutral);
     }
 
 

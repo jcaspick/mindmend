@@ -12,9 +12,15 @@ public class Node : MonoBehaviour
     public List<Connection> connections;
     public GameColor color;
 
-    public void CreateVisuals(NodeVisualBase prefab)
+    void OnDestroy()
     {
-        visual = Instantiate(prefab);
+        if (visual != null)
+            Destroy(visual.gameObject);
+    }
+
+    public void CreateVisuals()
+    {
+        visual = Instantiate(GameSettings.instance.graphics.node);
         visual.SetPosition(new Vector3(gridCoordinates.x, gridCoordinates.y, 0));
     }
 

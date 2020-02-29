@@ -9,9 +9,15 @@ public class Signal : MonoBehaviour
 
     public SignalVisualBase visual;
 
-    public void CreateVisuals(SignalVisualBase prefab)
+    void OnDestroy()
     {
-        visual = Instantiate(prefab);
+        if (visual != null)
+            Destroy(visual.gameObject);
+    }
+
+    public void CreateVisuals()
+    {
+        visual = Instantiate(GameSettings.instance.graphics.signal);
         visual.SetPosition(new Vector3(gridCoordinates.x, gridCoordinates.y, 0));
     }
 

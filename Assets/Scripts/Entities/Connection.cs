@@ -12,9 +12,15 @@ public class Connection : MonoBehaviour
 
     public ConnectionVisualBase visual;
 
-    public void CreateVisuals(ConnectionVisualBase prefab, float angle)
+    void OnDestroy()
     {
-        visual = Instantiate(prefab);
+        if (visual != null)
+            Destroy(visual.gameObject);
+    }
+
+    public void CreateVisuals(float angle)
+    {
+        visual = Instantiate(GameSettings.instance.graphics.connection);
         visual.Create(a.transform.position, b.transform.position, angle);
         visual.SetHealth(health, maxHealth);
     }

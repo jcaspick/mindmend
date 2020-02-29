@@ -616,7 +616,6 @@ MonoBehaviour:
     type: 3}
   goalPrefab: {fileID: 9017426388501971955, guid: 2f624328c184f0e4b8bed53662ee4083,
     type: 3}
-  graphics: {fileID: 11400000, guid: e99ffb37480408c4b9a3c2cb50e8c575, type: 2}
   nodeAudioPrefab: {fileID: 5239082662262362429, guid: 2111b8ae072af4b93a3a44ddc103ba7c,
     type: 3}
   goalAudioPrefab: {fileID: 5907630558587814281, guid: d706d8bbfe5fe428ea7da71ee8590f3a,
@@ -661,6 +660,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a4472cf2858e9040be35fd4c6c62b4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  graphics: {fileID: 11400000, guid: e99ffb37480408c4b9a3c2cb50e8c575, type: 2}
   AUDIO_SYNTH_MODE: 1
 --- !u!1 &1047976029
 GameObject:

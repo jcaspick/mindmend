@@ -10,9 +10,20 @@ public class Goal : MonoBehaviour
     public Vector2Int gridCoordinates;
     public GameColor color;
 
-    public void CreateVisuals(GoalVisualBase prefab)
+    void OnDestroy()
     {
-        visual = Instantiate(prefab);
+        if (visual != null)
+            Destroy(visual.gameObject);
+    }
+
+    void Update()
+    {
+        visual.SetPosition(transform.position);
+    }
+
+    public void CreateVisuals()
+    {
+        visual = Instantiate(GameSettings.instance.graphics.goal);
         visual.SetPosition(new Vector3(gridCoordinates.x, gridCoordinates.y, 0));
     }
 
