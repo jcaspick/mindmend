@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//using UnityEditor;
+using UnityEngine.UI;
 using System.IO;
 
 public enum Tool
@@ -10,8 +10,7 @@ public enum Tool
     Erase,
     RedSignal,
     BlueSignal,
-    RedGoal,
-    BlueGoal
+    PlaceGoal
 }
 
 public class LevelEditor : MonoBehaviour
@@ -22,7 +21,11 @@ public class LevelEditor : MonoBehaviour
     public int height = 8;
     public int startingHealth = 5;
     public int healthPerGoal = 2;
+    public int numGoals = 10;
     public EditorMarker markerPrefab;
+    public GameObject goalLabelPrefab;
+    public Transform canvas;
+    public Dictionary<int, GameObject> goalLabels;
     public GameObject mainCamera;
 
     public Node nodePrefab;
@@ -33,12 +36,12 @@ public class LevelEditor : MonoBehaviour
     private Transform markerHolder;
     private Tool tool = Tool.Place;
     private int goalIndex = 0;
+    private bool autoIncrement = true;
     private List<Node> nodes;
     private List<EditorMarker> markers;
     private Signal redSignal;
     private Signal blueSignal;
-    private Goal[] redGoals;
-    private Goal[] blueGoals;
+    private List<Goal> goals;
 
     void Awake()
     {
@@ -52,20 +55,23 @@ public class LevelEditor : MonoBehaviour
     {
         nodes = new List<Node>();
         markers = new List<EditorMarker>();
-        redGoals = new Goal[5];
-        blueGoals = new Goal[5];
+        goals = new List<Goal>();
+        goalLabels = new Dictionary<int, GameObject>();
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < numGoals; i++)
         {
-            redGoals[i] = Instantiate(goalPrefab);
-            redGoals[i].CreateVisuals();
-            redGoals[i].SetColor(GameColor.Red);
-        }
-        for (int i = 0; i < 5; i++)
-        {
-            blueGoals[i] = Instantiate(goalPrefab);
-            blueGoals[i].CreateVisuals();
-            blueGoals[i].SetColor(GameColor.Blue);
+            var goal = Instantiate(goalPrefab);
+            goal.CreateVisuals();
+
+            if (i == 0)
+                goal.SetColor(GameColor.Red);
+            else if (i == 1)
+                goal.SetColor(GameColor.Blue);
+            else
+                goal.SetColor(GameColor.Neutral);
+
+            goals.Add(goal);
+            SetGoalLabel(i, Vector3.zero);
         }
 
         redSignal = Instantiate(signalPrefab);
@@ -88,21 +94,15 @@ public class LevelEditor : MonoBehaviour
 
     void CreateDefaultBoard()
     {
+        mainCamera.transform.position = new Vector3(((float)width - 1) * 0.5f, ((float)height - 1) * 0.5f, -10);
+
         board = new Board(width, height);
         board.startingHealth = startingHealth;
         board.healthPerGoal = healthPerGoal;
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < numGoals; i++)
         {
-            redGoals[i].gridCoordinates = new Vector2Int(0, height - 1);
-            redGoals[i].transform.position = new Vector3(0, height - 1, 0);
-            board.redGoals[i] = redGoals[i].gridCoordinates;
-        }
-        for (int i = 0; i < 5; i++)
-        {
-            blueGoals[i].gridCoordinates = new Vector2Int(width - 1, 0);
-            blueGoals[i].transform.position = new Vector3(width - 1, 0, 0);
-            board.blueGoals[i] = blueGoals[i].gridCoordinates;
+            PlaceGoal(new Vector2Int(i % width, (height - 1) - (i % height)), i);
         }
 
         board.redSignalStart = new Vector2Int(0, 0);
@@ -112,8 +112,6 @@ public class LevelEditor : MonoBehaviour
 
         GenerateMarkers();
         GenerateNodes();
-
-        mainCamera.transform.position = new Vector3(((float)width - 1) * 0.5f, ((float)height - 1) * 0.5f, -10);
     }
 
     void LoadBoard(Board b)
@@ -149,16 +147,32 @@ public class LevelEditor : MonoBehaviour
         board.redGoals = b.redGoals;
         board.blueGoals = b.blueGoals;
 
-        for (int i = 0; i < board.redGoals.Length; i++) {
-            redGoals[i].transform.position = new Vector3(b.redGoals[i].x, b.redGoals[i].y, 0);
-        }
-        for (int i = 0; i < board.blueGoals.Length; i++) {
-            blueGoals[i].transform.position = new Vector3(b.blueGoals[i].x, b.blueGoals[i].y, 0);
-        }
+        //for (int i = 0; i < board.redGoals.Length; i++) {
+        //    redGoals[i].transform.position = new Vector3(b.redGoals[i].x, b.redGoals[i].y, 0);
+        //}
+        //for (int i = 0; i < board.blueGoals.Length; i++) {
+        //    blueGoals[i].transform.position = new Vector3(b.blueGoals[i].x, b.blueGoals[i].y, 0);
+        //}
 
         GenerateMarkers();
 
         mainCamera.transform.position = new Vector3(((float)b.width - 1) * 0.5f, ((float)b.height - 1) * 0.5f, -10);
+    }
+
+    void SetGoalLabel(int i, Vector3 pos)
+    {
+        if (goalLabels.ContainsKey(i))
+        {
+            var label = goalLabels[i];
+            label.transform.position = Camera.main.WorldToScreenPoint(pos);
+        } else
+        {
+            var label = Instantiate(goalLabelPrefab);
+            label.transform.SetParent(canvas);
+            label.transform.position = Camera.main.WorldToScreenPoint(pos);
+            label.GetComponent<Text>().text = (i + 1).ToString();
+            goalLabels.Add(i, label);
+        }
     }
 
     void GenerateMarkers()
@@ -250,16 +264,13 @@ public class LevelEditor : MonoBehaviour
         blueSignal.transform.position = new Vector3(gridCoordinates.x, gridCoordinates.y, 0);
     }
 
-    void SetRedGoal(Vector2Int gridCoordinates, int index)
+    void PlaceGoal(Vector2Int gridCoordinates, int index)
     {
-        board.redGoals[index] = gridCoordinates;
-        redGoals[index].transform.position = new Vector3(gridCoordinates.x, gridCoordinates.y, 0);
-    }
-
-    void SetBlueGoal(Vector2Int gridCoordinates, int index)
-    {
-        board.blueGoals[index] = gridCoordinates;
-        blueGoals[index].transform.position = new Vector3(gridCoordinates.x, gridCoordinates.y, 0);
+        Vector3 pos = new Vector3(gridCoordinates.x, gridCoordinates.y, 0);
+        goals[index].gridCoordinates = gridCoordinates;
+        goals[index].transform.position = pos;
+        board.goals[index] = gridCoordinates;
+        SetGoalLabel(index, pos + new Vector3(0.25f, 0.25f, 0.0f));
     }
 
     public void ChangeWidth(int width)
@@ -284,6 +295,43 @@ public class LevelEditor : MonoBehaviour
     {
         healthPerGoal = health;
         board.healthPerGoal = health;
+    }
+
+    public void SetNumGoals(int numGoals)
+    {
+        this.numGoals = numGoals;
+
+        if (goals.Count > numGoals)
+        {
+            for (int i = goals.Count - 1; i >= numGoals; i--)
+            {
+                var goal = goals[i];
+                goals.Remove(goal);
+                if (goalLabels.ContainsKey(i))
+                    Destroy(goalLabels[i].gameObject);
+                Destroy(goal.gameObject);
+            }
+        } else if (goals.Count < numGoals)
+        {
+            for (int i = goals.Count; i < numGoals; i++)
+            {
+                var goal = Instantiate(goalPrefab);
+                goal.CreateVisuals();
+                goal.SetColor(GameColor.Neutral);
+                goals.Add(goal);
+                PlaceGoal(new Vector2Int(i % width, (height - 1) - (i % height)), i);
+            }
+        }
+    }
+
+    public void SetAutoIncrement(bool val)
+    {
+        autoIncrement = val;
+    }
+
+    public void SetGoalIndex(int goalIndex)
+    {
+        this.goalIndex = goalIndex;
     }
 
     Node GetNodeAtCoordinates(Vector2Int coordinates)
@@ -333,11 +381,14 @@ public class LevelEditor : MonoBehaviour
             case Tool.BlueSignal:
                 SetBlueSignal(details.coordinates);
                 break;
-            case Tool.RedGoal:
-                SetRedGoal(details.coordinates, goalIndex);
-                break;
-            case Tool.BlueGoal:
-                SetBlueGoal(details.coordinates, goalIndex);
+            case Tool.PlaceGoal:
+                PlaceGoal(details.coordinates, goalIndex);
+                if (autoIncrement)
+                {
+                    goalIndex++;
+                    if (goalIndex >= numGoals)
+                        goalIndex = 0;
+                }
                 break;
         }
     }
@@ -345,7 +396,6 @@ public class LevelEditor : MonoBehaviour
     void HandleToolChange(EventDetails details)
     {
         tool = details.tool;
-        goalIndex = details.intData;
     }
 
     public void LoadBoard() {
@@ -354,8 +404,23 @@ public class LevelEditor : MonoBehaviour
         LoadBoard(board);
     }
 
+    void UpdateBoardData()
+    {
+        // basic data
+        board.numGoals = numGoals;
+
+        // goal positions
+        board.goals = new Vector2Int[numGoals];
+        for (int i = 0; i < goals.Count; i++)
+        {
+            board.goals[i] = goals[i].gridCoordinates;
+        }
+    }
+
     public void SaveBoard()
     {
+        UpdateBoardData();
+
         Debug.Log("Saving board!");
         var boardData = JsonUtility.ToJson(board, true);
         var savePath = Path.Combine(Application.persistentDataPath, "Levels");
