@@ -1,6 +1,8 @@
 {
     "width": 7,
     "height": 7,
+	"numColors": 2,
+	"numGoals": 10,
     "startingHealth": 5,
     "healthPerGoal": 2,
     "redSignalStart": {
@@ -55,6 +57,48 @@
             "y": 4
         }
     ],
+	"goals": [
+		{
+            "x": 2,
+            "y": 1
+        },
+		{
+            "x": 4,
+            "y": 5
+        },
+		{
+            "x": 2,
+            "y": 3
+        },
+		{
+            "x": 4,
+            "y": 1
+        },
+		{
+            "x": 2,
+            "y": 5
+        },
+		{
+            "x": 2,
+            "y": 2
+        },
+		{
+            "x": 4,
+            "y": 4
+        },
+		{
+            "x": 4,
+            "y": 3
+        },
+		{
+            "x": 4,
+            "y": 2
+        },
+		{
+            "x": 2,
+            "y": 4
+        }
+	],
     "arrangement": [
         true,
         true,

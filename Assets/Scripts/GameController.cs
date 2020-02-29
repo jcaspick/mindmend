@@ -48,13 +48,16 @@ public class GameController : MonoBehaviour
     private Signal redSignal;
     private Signal blueSignal;
     private List<Connection> connections;
-    private Goal[] redGoals;
-    private Goal[] blueGoals;
+    private Goal[] goals;
 
     private GamePhase phase;
+    private List<GameColor> playerColors;
+    private int numPlayers = 2;
+    private int numGoals = 10;
+    private int achievedGoals = 0;
     private GameColor currentPlayer = GameColor.Red;
-    private int nextRedGoal = 0;
-    private int nextBlueGoal = 0;
+    private int nextActiveGoal = 0;
+    private List<Goal> activeGoals;
     private Node firstClicked;
     private Node secondClicked;
     private Node underMouse;
@@ -79,14 +82,16 @@ public class GameController : MonoBehaviour
             board = BoardUtility.LoadFromJson(boardPath);
         }
 
+        numPlayers = board.numColors;
+        numGoals = board.numGoals;
         baseConnectionHealth = board.startingHealth;
         connectionHealthPerGoal = board.healthPerGoal;
 
         // initialize some stuff
         nodes = new List<Node>();
         connections = new List<Connection>();
-        redGoals = new Goal[5];
-        blueGoals = new Goal[5];
+        goals = new Goal[numGoals];
+        activeGoals = new List<Goal>();
         nodeHolder = new GameObject("nodes").transform;
         clickableHolder = new GameObject("clickable spaces").transform;
         phase = GamePhase.SelectStart;
@@ -109,9 +114,13 @@ public class GameController : MonoBehaviour
         // build the notes array, one for each spot on the board
         NoteUtility.Setup(board.width, board.height);
 
-        // reveal the first red and blue goals
-        RevealGoal(0, GameColor.Red);
-        RevealGoal(0, GameColor.Blue);
+        // reveal one goal per color plus one neutral goal
+        RevealGoal(0);
+        ActivateGoal(0, GameColor.Red);
+        RevealGoal(1);
+        ActivateGoal(1, GameColor.Blue);
+        RevealGoal(2);
+        nextActiveGoal = 2;
 
         int width = board.width;
         int height = board.height;
@@ -187,31 +196,29 @@ public class GameController : MonoBehaviour
         }
     }
 
-    void RevealGoal(int i, GameColor color)
+    void RevealGoal(int i)
     {
-        if (color == GameColor.Red)
-        {
-            var goal = Instantiate(goalPrefab);
-            goal.gridCoordinates = board.redGoals[i];
-            goal.transform.position = new Vector3(board.redGoals[i].x, board.redGoals[i].y, 0);
-            goal.transform.SetParent(nodeHolder);
-            goal.CreateVisuals();
-            goal.CreateAudio(goalAudioPrefab);
-            goal.SetColor(GameColor.Red);
-            redGoals[i] = goal;
+        if (i >= numGoals)
+            return;
 
-        }
-        else if (color == GameColor.Blue)
-        {
-            var goal = Instantiate(goalPrefab);
-            goal.gridCoordinates = board.blueGoals[i];
-            goal.transform.position = new Vector3(board.blueGoals[i].x, board.blueGoals[i].y, 0);
-            goal.transform.SetParent(nodeHolder);
-            goal.CreateVisuals();
-            goal.CreateAudio(goalAudioPrefab);
-            goal.SetColor(GameColor.Blue);
-            blueGoals[i] = goal;
-        }
+        var goal = Instantiate(goalPrefab);
+        goal.gridCoordinates = board.goals[i];
+        goal.transform.position = new Vector3(board.goals[i].x, board.goals[i].y, 0);
+        goal.transform.SetParent(nodeHolder);
+        goal.CreateVisuals();
+        goal.CreateAudio(goalAudioPrefab);
+        goal.SetColor(GameColor.Neutral);
+        goals[i] = goal;
+    }
+
+    void ActivateGoal(int i, GameColor color)
+    {
+        if (i >= numGoals)
+            return;
+
+        var goal = goals[i];
+        goal.SetColor(color);
+        activeGoals.Add(goal);
     }
 
     void HandleSpaceMouseDown(EventDetails details)
@@ -352,46 +359,30 @@ public class GameController : MonoBehaviour
 
     IEnumerator CheckWinConditions(GameColor color)
     {
-        if (color == GameColor.Red && nextRedGoal < 5)
+        for (int i = activeGoals.Count - 1; i >= 0; i--)
         {
-            var goal = redGoals[nextRedGoal];
-            if (goal.gridCoordinates == redSignal.gridCoordinates)
+            var goal = activeGoals[i];
+            var signal = color == GameColor.Red ? redSignal : blueSignal;
+            if (goal.color == color && goal.gridCoordinates == signal.gridCoordinates)
             {
                 goal.Achieve();
-                yield return StartCoroutine(UI_Controller.instance.ShowMemory(GameColor.Red, nextRedGoal));
+                // commented out the "memory" story for now since it wont work properly with the new more flexible game rules
+                // yield return StartCoroutine(UI_Controller.instance.ShowMemory(GameColor.Red, nextRedGoal));
+                achievedGoals++;
 
-                nextRedGoal++;
                 foreach (var connection in connections)
                 {
-                    if (connection.color == GameColor.Red)
+                    if (connection.color == color)
                         connection.ModifyHealth(connectionHealthPerGoal);
                 }
 
-                if (nextRedGoal < 5)
-                    RevealGoal(nextRedGoal, GameColor.Red);
-            }
-        }
-        else if (color == GameColor.Blue && nextBlueGoal < 5)
-        {
-            var goal = blueGoals[nextBlueGoal];
-            if (goal.gridCoordinates == blueSignal.gridCoordinates)
-            {
-                goal.Achieve();
-                yield return StartCoroutine(UI_Controller.instance.ShowMemory(GameColor.Blue, nextBlueGoal));
-
-                nextBlueGoal++;
-                foreach (var connection in connections)
-                {
-                    if (connection.color == GameColor.Blue)
-                        connection.ModifyHealth(connectionHealthPerGoal);
-                }
-
-                if (nextBlueGoal < 5)
-                    RevealGoal(nextBlueGoal, GameColor.Blue);
+                ActivateGoal(nextActiveGoal, color);
+                nextActiveGoal++;
+                RevealGoal(nextActiveGoal);
             }
         }
 
-        if (nextRedGoal == 5 && nextBlueGoal == 5)
+        if (achievedGoals == numGoals)
         {
             yield return new WaitForSeconds(3.0f);
             yield return StartCoroutine(UI_Controller.instance.ShowFinalMemory());
@@ -474,6 +465,6 @@ public class GameController : MonoBehaviour
 
     int TotalConnectionHealth()
     {
-        return baseConnectionHealth + (connectionHealthPerGoal * (nextRedGoal + nextBlueGoal));
+        return baseConnectionHealth + (connectionHealthPerGoal * achievedGoals);
     }
 }

@@ -22,6 +22,8 @@ public class MinimalGoalVisual : GoalVisualBase
                 renderer.material = Resources.Load("red") as Material;
             else if (color == GameColor.Blue)
                 renderer.material = Resources.Load("blue") as Material;
+            else
+                renderer.material = Resources.Load("grey") as Material;
         }
     }
 

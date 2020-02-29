@@ -6,22 +6,31 @@ public class Board
 {
     public int width;
     public int height;
+    public int numColors;
+    public int numGoals;
     public int startingHealth;
     public int healthPerGoal;
+    public Vector2Int[] signalStart;
+    public Vector2Int[] goals;
+    public bool[] arrangement;
+
+    // --- deprecated ---
     public Vector2Int redSignalStart;
     public Vector2Int blueSignalStart;
     public Vector2Int[] redGoals;
     public Vector2Int[] blueGoals;
-    public bool[] arrangement;
+    // ------------------
 
     public Board(int width, int height)
     {
         this.width = width;
         this.height = height;
+        numColors = 2;
+        numGoals = 10;
         startingHealth = 5;
         healthPerGoal = 2;
-        redGoals = new Vector2Int[5];
-        blueGoals = new Vector2Int[5];
+        signalStart = new Vector2Int[numColors];
+        goals = new Vector2Int[numGoals];
         arrangement = new bool[width * height];
     }
 
