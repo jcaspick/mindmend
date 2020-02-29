@@ -6,10 +6,7 @@ public class GameSettings : MonoBehaviour
 {
     public static GameSettings instance;
 
-    public bool USE_PLACEHOLDER_NODE = false;
-    public bool USE_PLACEHOLDER_CONNECTION = false;
-    public bool USE_PLACEHOLDER_SIGNAL = false;
-    public bool USE_PLACEHOLDER_GOAL = false;
+    public GraphicSet graphics;
     public bool AUDIO_SYNTH_MODE = false;
 
     void Awake()

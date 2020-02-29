@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GoalVisual : MonoBehaviour
+public class GoalVisual : GoalVisualBase
 {
     public GameObject blueGoal;
     public GameObject redGoal;
@@ -22,7 +22,12 @@ public class GoalVisual : MonoBehaviour
         }
     }
 
-    public void Achieve(GameColor color)
+    public override void SetPosition(Vector3 pos)
+    {
+        transform.position = pos;
+    }
+
+    public override void Achieve(GameColor color)
     {
         switch (color) {
             case GameColor.Red:
@@ -38,10 +43,10 @@ public class GoalVisual : MonoBehaviour
 
                 break;
         }
-        StartCoroutine("Grow");
+        StartCoroutine(Grow());
     }
 
-    public void SetColor(GameColor color)
+    public override void SetColor(GameColor color)
     {
         switch (color) {
             case GameColor.Red:
@@ -53,7 +58,7 @@ public class GoalVisual : MonoBehaviour
         }
     }
 
-    public IEnumerator Grow() {
+    private IEnumerator Grow() {
         while (maxScale > transform.localScale.x) {
             gameObject.transform.localScale += new Vector3(1, 1, 1) * Time.deltaTime * growFactor;
 
@@ -62,7 +67,7 @@ public class GoalVisual : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
     }
 
-    public IEnumerator FadeOut(GameObject goal) {
+    private IEnumerator FadeOut(GameObject goal) {
         for (float f = 0.0f; f < 1.0f; f += Time.deltaTime / fadeSpeed) {
             goal.GetComponent<SpriteRenderer>().material.color = new Color(1.0f, 1.0f, 1.0f, 1.0f - f);
             yield return null;

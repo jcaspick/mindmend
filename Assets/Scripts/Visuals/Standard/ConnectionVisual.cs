@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ConnectionVisual : MonoBehaviour
+public class ConnectionVisual : ConnectionVisualBase
 {
     private GameObject activeConnection;
     public GameObject blueConnection;
@@ -15,7 +15,7 @@ public class ConnectionVisual : MonoBehaviour
         Reset();
     }
 
-    public void Create(Vector3 startNode, Vector3 endNode, float angle)
+    public override void Create(Vector3 startNode, Vector3 endNode, float angle)
     {
         originNode = startNode;
 
@@ -27,31 +27,36 @@ public class ConnectionVisual : MonoBehaviour
         SizeMask(gameObject.transform, distance);
     }
 
-    public void Break()
+    public override void Break()
     {
         GameObject.Destroy(gameObject);    
     }
 
-    public void SetHealthPercentage(int health, float healthMetric)
+    public override void SetHealth(int health, int maxHealth)
     {
-        if (activeConnection && health <= 3) {
+        float normalizedHealth = (float)health / (float)maxHealth;
+
+        if (activeConnection && health <= 3)
+        {
             GameObject mainConnection = activeConnection.transform.GetChild(0).gameObject;
 
             Flicker flicker = mainConnection.GetComponent<Flicker>();
-            if(flicker == null) {
+            if (flicker == null)
+            {
                 flicker = mainConnection.AddComponent<Flicker>();
             }
-            flicker.minWaitTime = healthMetric;
-            flicker.maxWaitTime = health * healthMetric;
+            flicker.minWaitTime = normalizedHealth;
+            flicker.maxWaitTime = health * normalizedHealth;
 
-            if (health == 1) {
+            if (health == 1)
+            {
                 flicker.minWaitTime = 0;
                 flicker.maxWaitTime = 1.0f;
             }
         }
     }
 
-    public void SetColor(GameColor color)
+    public override void SetColor(GameColor color)
     {
         Reset();
 

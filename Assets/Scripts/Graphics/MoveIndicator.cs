@@ -14,23 +14,6 @@ public class MoveIndicator : MonoBehaviour
         renderer = GetComponent<SpriteRenderer>();
     }
 
-    public void SetColor(GameColor color) {
-        if (GameSettings.instance.USE_PLACEHOLDER_SIGNAL) {
-
-            switch (color) {
-                case GameColor.Neutral:
-                    StartCoroutine(FadeIndicator(null));
-                    break;
-                case GameColor.Red:
-                    StartCoroutine(FadeIndicator(redIndicator));
-                    break;
-                case GameColor.Blue:
-                    StartCoroutine(FadeIndicator(blueIndicator));
-                    break;
-            }
-        }
-    }
-
     public IEnumerator FadeIndicator(Sprite sprite) {
         // fade out
         for (float f = 0.0f; f < 1.0f; f += Time.deltaTime / fadeSpeed) {

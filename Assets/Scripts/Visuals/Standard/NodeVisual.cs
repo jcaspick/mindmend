@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NodeVisual : MonoBehaviour
+public class NodeVisual : NodeVisualBase
 {
     // Order in array represents layer order
     public GameObject blueNode;
@@ -18,7 +18,12 @@ public class NodeVisual : MonoBehaviour
         originalScale = transform.localScale;
     }
 
-    public void SetColor(GameColor color) {
+    public override void SetPosition(Vector3 pos)
+    {
+        transform.position = pos;
+    }
+
+    public override void SetColor(GameColor color) {
         Reset();
 
         switch (color) {
@@ -37,28 +42,27 @@ public class NodeVisual : MonoBehaviour
         }
     }
 
-    public void LowHealth() {
-        Flicker flicker = gameObject.AddComponent<Flicker>();
-        flicker.minWaitTime = 0;
-        flicker.maxWaitTime = 2.0f;
-    }
-
-    public void Reset() {
-        foreach (Transform child in gameObject.transform) {
-            child.gameObject.SetActive(false);
-        }
-    }
-
-    public void Select()
+    public override void Select()
     {
         if (gameObject.transform.localScale == originalScale) {
             gameObject.transform.localScale = transform.localScale + selectScale;
         }
     }
 
-    public void Deselect()
+    public override void Deselect()
     {
         gameObject.transform.localScale = originalScale;
     }
 
+    private void LowHealth() {
+        Flicker flicker = gameObject.AddComponent<Flicker>();
+        flicker.minWaitTime = 0;
+        flicker.maxWaitTime = 2.0f;
+    }
+
+    private void Reset() {
+        foreach (Transform child in gameObject.transform) {
+            child.gameObject.SetActive(false);
+        }
+    }
 }

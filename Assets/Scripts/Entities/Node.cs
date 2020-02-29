@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Node : MonoBehaviour
 {
-    public NodeVisual visual;
+    public NodeVisualBase visual;
     public NodeAudio audio;
 
     public Vector2Int gridCoordinates;
@@ -12,21 +12,10 @@ public class Node : MonoBehaviour
     public List<Connection> connections;
     public GameColor color;
 
-    Vector3 startScale;
-
-    void Start()
+    public void CreateVisuals(NodeVisualBase prefab)
     {
-        startScale = transform.localScale;
-    }
-
-    public void CreateVisuals(NodeVisual prefab)
-    {
-        if (!GameSettings.instance.USE_PLACEHOLDER_NODE)
-        {
-            visual = Instantiate(prefab);
-            visual.transform.position = new Vector3(gridCoordinates.x, gridCoordinates.y, 0);
-            GetComponentInChildren<Renderer>().enabled = false;
-        }
+        visual = Instantiate(prefab);
+        visual.SetPosition(new Vector3(gridCoordinates.x, gridCoordinates.y, 0));
     }
 
     public void CreateAudio(NodeAudio prefab) {
@@ -39,52 +28,17 @@ public class Node : MonoBehaviour
     public void SetColor(GameColor color)
     {
         this.color = color;
-
-        if (GameSettings.instance.USE_PLACEHOLDER_NODE)
-        {
-           var renderer = GetComponentInChildren<Renderer>();
-
-            switch (color)
-            {
-                case GameColor.Red:
-                    renderer.material = Resources.Load("red") as Material;
-                    break;
-                case GameColor.Blue:
-                    renderer.material = Resources.Load("blue") as Material;
-                    break;
-                default:
-                    renderer.material = Resources.Load("grey") as Material;
-                    break;
-            }
-        }
-        else
-        {
-            visual.SetColor(color);
-        }
+        visual.SetColor(color);
     }
 
     public void Select()
     {
-        if (GameSettings.instance.USE_PLACEHOLDER_NODE)
-        {
-            var currentScale = transform.localScale;
-            transform.localScale = startScale * 2;
-        } else
-        {
-            visual.Select();
-        }
+        visual.Select();
     }
 
     public void Deselect()
     {
-        if (GameSettings.instance.USE_PLACEHOLDER_NODE)
-        {
-            var currentScale = transform.localScale;
-            transform.localScale = startScale;
-        } else
-        {
-            visual.Deselect();
-        }
+        visual.Deselect();
     }
 }
 

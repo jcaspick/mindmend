@@ -18,7 +18,9 @@ public enum GameColor
 {
     Neutral,
     Red,
-    Blue
+    Blue,
+    Green,
+    Purple
 }
 
 public class GameController : MonoBehaviour
@@ -32,11 +34,6 @@ public class GameController : MonoBehaviour
     public Signal signalPrefab;
     public Goal goalPrefab;
 
-    public NodeVisual nodeVisualPrefab;
-    public ConnectionVisual connectionVisualPrefab;
-    public SignalVisual signalVisualPrefab;
-    public GoalVisual goalVisualPrefab;
-
     public NodeAudio nodeAudioPrefab;
     public GoalAudio goalAudioPrefab;
 
@@ -45,6 +42,8 @@ public class GameController : MonoBehaviour
 
     private Transform nodeHolder;
     private Transform clickableHolder;
+
+    private GraphicSet graphics;
 
     private Board board;
     private List<Node> nodes;
@@ -64,6 +63,8 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
+        graphics = GameSettings.instance.graphics;
+
         //EventManager.AddListener(EventType.SpaceClicked, HandleSpaceClicked);
         EventManager.AddListener(EventType.SpaceMouseDown, HandleSpaceMouseDown);
         EventManager.AddListener(EventType.SpaceMouseEnter, HandleSpaceMouseEnter);
@@ -99,14 +100,14 @@ public class GameController : MonoBehaviour
         redSignal.gridCoordinates = board.redSignalStart;
         redSignal.transform.position = new Vector3(board.redSignalStart.x, board.redSignalStart.y, 0);
         redSignal.transform.SetParent(nodeHolder);
-        redSignal.CreateVisuals(signalVisualPrefab);
+        redSignal.CreateVisuals(graphics.signal);
         redSignal.SetColor(GameColor.Red);
 
         blueSignal = Instantiate(signalPrefab);
         blueSignal.gridCoordinates = board.blueSignalStart;
         blueSignal.transform.position = new Vector3(board.blueSignalStart.x, board.blueSignalStart.y, 0);
         blueSignal.transform.SetParent(nodeHolder);
-        blueSignal.CreateVisuals(signalVisualPrefab);
+        blueSignal.CreateVisuals(graphics.signal);
         blueSignal.SetColor(GameColor.Blue);
 
         // build the notes array, one for each spot on the board
@@ -137,7 +138,7 @@ public class GameController : MonoBehaviour
                 node.transform.position = new Vector3(x, y, 0);
                 node.gridCoordinates = new Vector2Int(x, y);
                 node.transform.SetParent(nodeHolder);
-                node.CreateVisuals(nodeVisualPrefab);
+                node.CreateVisuals(graphics.node);
                 node.CreateAudio(nodeAudioPrefab);
 
                 if (node.gridCoordinates == blueSignal.gridCoordinates)
@@ -198,7 +199,7 @@ public class GameController : MonoBehaviour
             goal.gridCoordinates = board.redGoals[i];
             goal.transform.position = new Vector3(board.redGoals[i].x, board.redGoals[i].y, 0);
             goal.transform.SetParent(nodeHolder);
-            goal.CreateVisuals(goalVisualPrefab);
+            goal.CreateVisuals(graphics.goal);
             goal.CreateAudio(goalAudioPrefab);
             goal.SetColor(GameColor.Red);
             redGoals[i] = goal;
@@ -210,7 +211,7 @@ public class GameController : MonoBehaviour
             goal.gridCoordinates = board.blueGoals[i];
             goal.transform.position = new Vector3(board.blueGoals[i].x, board.blueGoals[i].y, 0);
             goal.transform.SetParent(nodeHolder);
-            goal.CreateVisuals(goalVisualPrefab);
+            goal.CreateVisuals(graphics.goal);
             goal.CreateAudio(goalAudioPrefab);
             goal.SetColor(GameColor.Blue);
             blueGoals[i] = goal;
@@ -256,28 +257,22 @@ public class GameController : MonoBehaviour
         connection.transform.position = start.transform.position;
         float angle = Mathf.Rad2Deg * Mathf.Atan2(end.gridCoordinates.y - start.gridCoordinates.y,
             end.gridCoordinates.x - start.gridCoordinates.x);
-        connection.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
         // set game state
         connection.a = start;
         connection.b = end;
-        connection.health = TotalConnectionHealth();
+        connection.SetHealth(TotalConnectionHealth());
+        connection.SetMaxHealth(TotalConnectionHealth());
         start.connections.Add(connection);
         end.connections.Add(connection);
 
         connections.Add(connection);
 
         // create visual object
-        connection.CreateVisuals(connectionVisualPrefab, angle);
+        connection.CreateVisuals(graphics.connection, angle);
         connection.SetColor(currentPlayer);
         start.SetColor(currentPlayer);
         end.SetColor(currentPlayer);
-
-        // legacy cruft
-        if (start.IsDiagonal(end))
-        {
-            connection.transform.localScale = new Vector3(1.414f, 1.0f, 1.0f);
-        }
     }
 
     bool IsValidFirstNode(Node node)
@@ -327,8 +322,8 @@ public class GameController : MonoBehaviour
             yield return StartCoroutine(TweenSignal(signal, start, end));
             signal.gridCoordinates = end.gridCoordinates;
             var connection = start.GetConnection(end);
-            connection.SetHealthPercentage(1.0f);
-            connection.health = TotalConnectionHealth();
+            connection.SetHealth(TotalConnectionHealth());
+            connection.SetMaxHealth(TotalConnectionHealth());
 
             if (i == path.Count - 2) {
                 end.audio.Sustain();
@@ -373,7 +368,7 @@ public class GameController : MonoBehaviour
                 foreach (var connection in connections)
                 {
                     if (connection.color == GameColor.Red)
-                        connection.health += connectionHealthPerGoal;
+                        connection.ModifyHealth(connectionHealthPerGoal);
                 }
 
                 if (nextRedGoal < 5)
@@ -392,7 +387,7 @@ public class GameController : MonoBehaviour
                 foreach (var connection in connections)
                 {
                     if (connection.color == GameColor.Blue)
-                        connection.health += connectionHealthPerGoal;
+                        connection.ModifyHealth(connectionHealthPerGoal);
                 }
 
                 if (nextBlueGoal < 5)
@@ -419,8 +414,8 @@ public class GameController : MonoBehaviour
             var connection = connections[i];
             if (connection.color != color)
                 continue;
-            connection.health--;
-            if (connection.health <= 0)
+            connection.ModifyHealth(-1);
+            if (connection.GetHealth() <= 0)
             {
                 connection.Break();
                 connection.a.connections.Remove(connection);
@@ -431,10 +426,6 @@ public class GameController : MonoBehaviour
                     connection.b.SetColor(GameColor.Neutral);
                 connections.Remove(connection);
                 Destroy(connection.gameObject);
-            }
-            else
-            {
-                connection.SetHealthPercentage((float)connection.health / (float)TotalConnectionHealth());
             }
         }
 

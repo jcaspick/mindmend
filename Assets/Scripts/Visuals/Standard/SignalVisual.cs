@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SignalVisual : MonoBehaviour
+public class SignalVisual : SignalVisualBase
 {
     public GameObject blueSignal;
     public GameObject redSignal;
@@ -13,7 +13,12 @@ public class SignalVisual : MonoBehaviour
         }
     }
 
-    public void SetColor(GameColor color)
+    public override void SetPosition(Vector3 pos)
+    {
+        transform.position = pos;
+    }
+
+    public override void SetColor(GameColor color)
     {
         switch (color) {
             case GameColor.Red:
