@@ -18,12 +18,24 @@ public class MinimalGoalVisual : GoalVisualBase
     {
         foreach (var renderer in GetComponentsInChildren<Renderer>())
         {
-            if (color == GameColor.Red)
-                renderer.material = Resources.Load("red") as Material;
-            else if (color == GameColor.Blue)
-                renderer.material = Resources.Load("blue") as Material;
-            else
-                renderer.material = Resources.Load("grey") as Material;
+            switch (color)
+            {
+                case GameColor.Red:
+                    renderer.material = Resources.Load("red") as Material;
+                    break;
+                case GameColor.Blue:
+                    renderer.material = Resources.Load("blue") as Material;
+                    break;
+                case GameColor.Green:
+                    renderer.material = Resources.Load("green") as Material;
+                    break;
+                case GameColor.Purple:
+                    renderer.material = Resources.Load("purple") as Material;
+                    break;
+                default:
+                    renderer.material = Resources.Load("grey") as Material;
+                    break;
+            }
         }
     }
 

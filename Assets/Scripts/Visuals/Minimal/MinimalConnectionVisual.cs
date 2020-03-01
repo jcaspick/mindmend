@@ -24,19 +24,25 @@ public class MinimalConnectionVisual : ConnectionVisualBase
     public override void SetColor(GameColor color)
     {      
         var renderer = GetComponentInChildren<Renderer>();
-           
+
         switch (color)
-        {  
-            case GameColor.Neutral:
-                renderer.material = Resources.Load("grey") as Material;
-                break;
+        {
             case GameColor.Red:
                 renderer.material = Resources.Load("red") as Material;
                 break;
             case GameColor.Blue:
                 renderer.material = Resources.Load("blue") as Material;
                 break;
-        }  
+            case GameColor.Green:
+                renderer.material = Resources.Load("green") as Material;
+                break;
+            case GameColor.Purple:
+                renderer.material = Resources.Load("purple") as Material;
+                break;
+            default:
+                renderer.material = Resources.Load("grey") as Material;
+                break;
+        }
     }      
            
     public override void SetHealth(int health, int maxHealth)

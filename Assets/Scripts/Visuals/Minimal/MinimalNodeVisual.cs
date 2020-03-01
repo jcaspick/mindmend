@@ -28,6 +28,12 @@ public class MinimalNodeVisual : NodeVisualBase
             case GameColor.Blue:
                 renderer.material = Resources.Load("blue") as Material;
                 break;
+            case GameColor.Green:
+                renderer.material = Resources.Load("green") as Material;
+                break;
+            case GameColor.Purple:
+                renderer.material = Resources.Load("purple") as Material;
+                break;
             default:
                 renderer.material = Resources.Load("grey") as Material;
                 break;

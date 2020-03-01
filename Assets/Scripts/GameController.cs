@@ -45,26 +45,30 @@ public class GameController : MonoBehaviour
 
     private Board board;
     private List<Node> nodes;
-    private Signal redSignal;
-    private Signal blueSignal;
+    private List<Signal> signals;
     private List<Connection> connections;
     private Goal[] goals;
 
     private GamePhase phase;
-    private List<GameColor> playerColors;
-    private int numPlayers = 2;
+    private int numColors = 2;
     private int numGoals = 10;
     private int achievedGoals = 0;
-    private GameColor currentPlayer = GameColor.Red;
+    private int currentPlayer = 0;
     private int nextActiveGoal = 0;
     private List<Goal> activeGoals;
     private Node firstClicked;
     private Node secondClicked;
     private Node underMouse;
 
+    private readonly GameColor[] playerColors = {
+        GameColor.Red,
+        GameColor.Blue,
+        GameColor.Green,
+        GameColor.Purple
+    };
+
     void Start()
     {
-        //EventManager.AddListener(EventType.SpaceClicked, HandleSpaceClicked);
         EventManager.AddListener(EventType.SpaceMouseDown, HandleSpaceMouseDown);
         EventManager.AddListener(EventType.SpaceMouseEnter, HandleSpaceMouseEnter);
         EventManager.AddListener(EventType.SpaceMouseExit, HandleSpaceMouseExit);
@@ -82,7 +86,7 @@ public class GameController : MonoBehaviour
             board = BoardUtility.LoadFromJson(boardPath);
         }
 
-        numPlayers = board.numColors;
+        numColors = board.numColors;
         numGoals = board.numGoals;
         baseConnectionHealth = board.startingHealth;
         connectionHealthPerGoal = board.healthPerGoal;
@@ -90,37 +94,37 @@ public class GameController : MonoBehaviour
         // initialize some stuff
         nodes = new List<Node>();
         connections = new List<Connection>();
+        signals = new List<Signal>();
         goals = new Goal[numGoals];
         activeGoals = new List<Goal>();
         nodeHolder = new GameObject("nodes").transform;
         clickableHolder = new GameObject("clickable spaces").transform;
         phase = GamePhase.SelectStart;
 
-        // create the red and blue signals
-        redSignal = Instantiate(signalPrefab);
-        redSignal.gridCoordinates = board.redSignalStart;
-        redSignal.transform.position = new Vector3(board.redSignalStart.x, board.redSignalStart.y, 0);
-        redSignal.transform.SetParent(nodeHolder);
-        redSignal.CreateVisuals();
-        redSignal.SetColor(GameColor.Red);
-
-        blueSignal = Instantiate(signalPrefab);
-        blueSignal.gridCoordinates = board.blueSignalStart;
-        blueSignal.transform.position = new Vector3(board.blueSignalStart.x, board.blueSignalStart.y, 0);
-        blueSignal.transform.SetParent(nodeHolder);
-        blueSignal.CreateVisuals();
-        blueSignal.SetColor(GameColor.Blue);
+        // create the signals
+        for (int i = 0; i < numColors; i++)
+        {
+            var signal = Instantiate(signalPrefab);
+            var coordinates = board.signalStart[i];
+            signal.gridCoordinates = coordinates;
+            signal.transform.position = new Vector3(coordinates.x, coordinates.y, 0);
+            signal.transform.SetParent(nodeHolder);
+            signal.CreateVisuals();
+            signal.SetColor(playerColors[i]);
+            signals.Add(signal);
+        }
 
         // build the notes array, one for each spot on the board
         NoteUtility.Setup(board.width, board.height);
 
         // reveal one goal per color plus one neutral goal
-        RevealGoal(0);
-        ActivateGoal(0, GameColor.Red);
-        RevealGoal(1);
-        ActivateGoal(1, GameColor.Blue);
-        RevealGoal(2);
-        nextActiveGoal = 2;
+        for (int i = 0; i < numColors; i++)
+        {
+            RevealGoal(i);
+            ActivateGoal(i, playerColors[i]);
+        }
+        RevealGoal(numColors);
+        nextActiveGoal = numColors;
 
         int width = board.width;
         int height = board.height;
@@ -145,16 +149,17 @@ public class GameController : MonoBehaviour
                 node.transform.SetParent(nodeHolder);
                 node.CreateVisuals();
                 node.CreateAudio(nodeAudioPrefab);
-
-                if (node.gridCoordinates == blueSignal.gridCoordinates)
-                    node.SetColor(GameColor.Blue);
-                else if (node.gridCoordinates == redSignal.gridCoordinates)
-                    node.SetColor(GameColor.Red);
-                else
-                    node.SetColor(GameColor.Neutral);
+                node.SetColor(GameColor.Neutral);
 
                 nodes.Add(node);
             }
+        }
+
+        // color nodes underneath signals
+        for (int i = 0; i < numColors; i++)
+        {
+            var node = GetNodeAtCoordinates(signals[i].gridCoordinates);
+            node.SetColor(playerColors[i]);
         }
 
         mainCamera.transform.position = new Vector3(((float)width - 1) * 0.5f, ((float)height - 1) * 0.5f, -10);
@@ -182,7 +187,7 @@ public class GameController : MonoBehaviour
                     firstClicked.Deselect();
                     MakeConnection(firstClicked, underMouse);
                     phase = GamePhase.SignalsMove;
-                    var signal = currentPlayer == GameColor.Red ? redSignal : blueSignal;
+                    var signal = signals[currentPlayer];
                     var path = Pathfinder.GetPath(GetNodeAtCoordinates(signal.gridCoordinates), underMouse);
                     StartCoroutine(HandleSignalMovement(currentPlayer, path));
                 } else
@@ -227,7 +232,6 @@ public class GameController : MonoBehaviour
         if (phase == GamePhase.SelectStart && IsValidFirstNode(node))
         {
             firstClicked = node;
-            node.SetColor(currentPlayer);
             node.Select();
             phase = GamePhase.SelectEnd;
 
@@ -273,18 +277,18 @@ public class GameController : MonoBehaviour
 
         // create visual object
         connection.CreateVisuals(angle);
-        connection.SetColor(currentPlayer);
-        start.SetColor(currentPlayer);
-        end.SetColor(currentPlayer);
+        var color = playerColors[currentPlayer];
+        connection.SetColor(color);
+        start.SetColor(color);
+        end.SetColor(color);
     }
 
     bool IsValidFirstNode(Node node)
     {
-        if (currentPlayer == GameColor.Red && node.gridCoordinates == redSignal.gridCoordinates)
+        if (node.gridCoordinates == signals[currentPlayer].gridCoordinates)
             return true;
-        if (currentPlayer == GameColor.Blue && node.gridCoordinates == blueSignal.gridCoordinates)
-            return true;
-        return (node.color == currentPlayer && HasLegalMove(node));
+        else
+            return (node.color == playerColors[currentPlayer] && HasLegalMove(node));
     }
 
     bool IsValidSecondNode(Node node)
@@ -315,9 +319,9 @@ public class GameController : MonoBehaviour
         return null;
     }
 
-    IEnumerator HandleSignalMovement(GameColor color, List<Node> path)
+    IEnumerator HandleSignalMovement(int player, List<Node> path)
     {
-        var signal = color == GameColor.Red ? redSignal : blueSignal;
+        var signal = signals[player];
 
         for (int i = 0; i < path.Count - 1; i++) {
             var start = path[i];
@@ -336,7 +340,7 @@ public class GameController : MonoBehaviour
         }
 
         phase = GamePhase.CheckWinConditions;
-        StartCoroutine(CheckWinConditions(currentPlayer));
+        StartCoroutine(CheckWinConditions(player));
     }
 
     IEnumerator TweenSignal(Signal signal, Node start, Node end)
@@ -357,15 +361,18 @@ public class GameController : MonoBehaviour
         signal.transform.position = end.transform.position;
     }
 
-    IEnumerator CheckWinConditions(GameColor color)
+    IEnumerator CheckWinConditions(int player)
     {
+        var signal = signals[player];
+        var color = playerColors[player];
+
         for (int i = activeGoals.Count - 1; i >= 0; i--)
         {
             var goal = activeGoals[i];
-            var signal = color == GameColor.Red ? redSignal : blueSignal;
             if (goal.color == color && goal.gridCoordinates == signal.gridCoordinates)
             {
                 goal.Achieve();
+                activeGoals.Remove(goal);
                 // commented out the "memory" story for now since it wont work properly with the new more flexible game rules
                 // yield return StartCoroutine(UI_Controller.instance.ShowMemory(GameColor.Red, nextRedGoal));
                 achievedGoals++;
@@ -390,12 +397,13 @@ public class GameController : MonoBehaviour
         {
             yield return null;
             phase = GamePhase.ConnectionsDecay;
-            StartCoroutine(ConnectionsDecay(currentPlayer));
+            StartCoroutine(ConnectionsDecay(player));
         }
     }
 
-    IEnumerator ConnectionsDecay(GameColor color)
+    IEnumerator ConnectionsDecay(int player)
     {
+        var color = playerColors[player];
         for (int i = connections.Count - 1; i >= 0; i--)
         {
             var connection = connections[i];
@@ -420,8 +428,8 @@ public class GameController : MonoBehaviour
 
         firstClicked = null;
         secondClicked = null;
-        currentPlayer = currentPlayer == GameColor.Red ? GameColor.Blue : GameColor.Red;
-        EventManager.Invoke(EventType.PlayerChange, new EventDetails(currentPlayer));
+        currentPlayer = (currentPlayer + 1) % numColors;
+        EventManager.Invoke(EventType.PlayerChange, new EventDetails(playerColors[currentPlayer]));
 
         if (IsLoseCondition(currentPlayer))
         {
@@ -430,8 +438,9 @@ public class GameController : MonoBehaviour
         phase = GamePhase.SelectStart;
     }
 
-    bool IsLoseCondition(GameColor color)
+    bool IsLoseCondition(int player)
     {
+        var color = playerColors[player];
         var coloredNodes = new List<Node>();
         foreach (var node in nodes)
         {

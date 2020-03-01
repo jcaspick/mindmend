@@ -20,19 +20,14 @@ public class LevelEditorButtons : MonoBehaviour
         EventManager.Invoke(EventType.EditorToolChange, new EventDetails(Tool.Erase));
     }
 
-    public void RedSignal()
-    {
-        EventManager.Invoke(EventType.EditorToolChange, new EventDetails(Tool.RedSignal));
-    }
-
-    public void BlueSignal()
-    {
-        EventManager.Invoke(EventType.EditorToolChange, new EventDetails(Tool.BlueSignal));
-    }
-
     public void PlaceGoal()
     {
         EventManager.Invoke(EventType.EditorToolChange, new EventDetails(Tool.PlaceGoal));
+    }
+
+    public void PlaceSignal()
+    {
+        EventManager.Invoke(EventType.EditorToolChange, new EventDetails(Tool.PlaceSignal));
     }
 
     public void Load() {
@@ -84,6 +79,19 @@ public class LevelEditorButtons : MonoBehaviour
     public void SetAutoIncrement(bool val)
     {
         LevelEditor.instance.SetAutoIncrement(val);
+    }
+
+    public void SetNumColors(string str)
+    {
+        int numColors = int.Parse(str);
+        LevelEditor.instance.SetNumColors(numColors);
+    }
+
+    public void SetSignalIndex(string str)
+    {
+        // subtract one to go from non-programmer numbers to array index :)
+        int signalIndex = int.Parse(str) - 1;
+        LevelEditor.instance.SetSignalIndex(signalIndex);
     }
 
     private void EchoSavePath() {
