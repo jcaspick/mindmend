@@ -7,6 +7,8 @@ public class ConnectionVisual : ConnectionVisualBase
     private GameObject activeConnection;
     public GameObject blueConnection;
     public GameObject redConnection;
+    public GameObject purpleConnection;
+    public GameObject greenConnection;
     public GameObject neutralConnection;
 
     private Vector3 originNode;
@@ -68,6 +70,14 @@ public class ConnectionVisual : ConnectionVisualBase
             case GameColor.Blue:
                 blueConnection.SetActive(true);
                 activeConnection = blueConnection;
+                break;
+            case GameColor.Purple:
+                purpleConnection.SetActive(true);
+                activeConnection = purpleConnection;
+                break;
+            case GameColor.Green:
+                greenConnection.SetActive(true);
+                activeConnection = greenConnection;
                 break;
             case GameColor.Neutral:
                 neutralConnection.SetActive(true);

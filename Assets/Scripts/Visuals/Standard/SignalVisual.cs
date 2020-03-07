@@ -6,6 +6,8 @@ public class SignalVisual : SignalVisualBase
 {
     public GameObject blueSignal;
     public GameObject redSignal;
+    public GameObject purpleSignal;
+    public GameObject greenSignal;
 
     public void Awake() {
         foreach (Transform child in gameObject.transform) {
@@ -23,11 +25,15 @@ public class SignalVisual : SignalVisualBase
         switch (color) {
             case GameColor.Red:
                 redSignal.SetActive(true);
-                GameObject.Destroy(blueSignal);
                 break;
             case GameColor.Blue:
                 blueSignal.SetActive(true);
-                GameObject.Destroy(redSignal);
+                break;
+            case GameColor.Purple:
+                purpleSignal.SetActive(true);
+                break;
+            case GameColor.Green:
+                greenSignal.SetActive(true);
                 break;
         }
     }

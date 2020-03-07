@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class NodeVisual : NodeVisualBase
 {
-    // Order in array represents layer order
     public GameObject blueNode;
     public GameObject redNode;
+    public GameObject purpleNode;
+    public GameObject greenNode;
     public GameObject neutralNode;
     public GameObject inactiveNode;
 
@@ -32,6 +33,12 @@ public class NodeVisual : NodeVisualBase
                 break;
             case GameColor.Blue:
                 blueNode.SetActive(true);
+                break;
+            case GameColor.Purple:
+                purpleNode.SetActive(true);
+                break;
+            case GameColor.Green:
+                greenNode.SetActive(true);
                 break;
             case GameColor.Neutral:
                 neutralNode.SetActive(true);

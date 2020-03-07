@@ -6,9 +6,13 @@ public class GoalVisual : GoalVisualBase
 {
     public GameObject blueGoal;
     public GameObject redGoal;
+    public GameObject purpleGoal;
+    public GameObject greenGoal;
 
     public Sprite blueGoalActive;
     public Sprite redGoalActive;
+    public Sprite purpleGoalActive;
+    public Sprite greenGoalActive;
 
     public float maxScale;
     public float growFactor;
@@ -42,6 +46,18 @@ public class GoalVisual : GoalVisualBase
                 StartCoroutine(FadeOut(blueGoal));
 
                 break;
+            case GameColor.Purple:
+                purpleGoal.GetComponent<SpriteRenderer>().sprite = purpleGoalActive;
+                purpleGoal.GetComponent<Flicker>();
+                StartCoroutine(FadeOut(purpleGoal));
+
+                break;
+            case GameColor.Green:
+                greenGoal.GetComponent<SpriteRenderer>().sprite = greenGoalActive;
+                greenGoal.GetComponent<Flicker>();
+                StartCoroutine(FadeOut(greenGoal));
+
+                break;
         }
         StartCoroutine(Grow());
     }
@@ -54,6 +70,12 @@ public class GoalVisual : GoalVisualBase
                 break;
             case GameColor.Blue:
                 blueGoal.SetActive(true);
+                break;
+            case GameColor.Purple:
+                purpleGoal.SetActive(true);
+                break;
+            case GameColor.Green:
+                greenGoal.SetActive(true);
                 break;
         }
     }

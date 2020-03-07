@@ -13,6 +13,8 @@ public class UI_Controller : MonoBehaviour
     public Image memoryImage;
     public CanvasGroup redTurnFader;
     public CanvasGroup blueTurnFader;
+    public CanvasGroup purpleTurnFader;
+    public CanvasGroup greenTurnFader;
 
     public List<Sprite> redMemories;
     public List<Sprite> blueMemories;
@@ -112,17 +114,23 @@ public class UI_Controller : MonoBehaviour
     {
         var color = details.color;
         if (color == GameColor.Red)
-            StartCoroutine(TweenTurnDisplay(1.0f, 0.0f));
+            StartCoroutine(TweenTurnDisplay(1.0f, 0.0f, 0.0f, 0.0f));
         else if (color == GameColor.Blue)
-            StartCoroutine(TweenTurnDisplay(0.0f, 1.0f));
+            StartCoroutine(TweenTurnDisplay(0.0f, 1.0f, 0.0f, 0.0f));
+        else if (color == GameColor.Purple)
+            StartCoroutine(TweenTurnDisplay(0.0f, 0.0f, 1.0f, 0.0f));
+        else if (color == GameColor.Green)
+            StartCoroutine(TweenTurnDisplay(0.0f, 0.0f, 0.0f, 1.0f));
     }
 
-    IEnumerator TweenTurnDisplay(float redEnd, float blueEnd)
+    IEnumerator TweenTurnDisplay(float redEnd, float blueEnd, float purpleEnd, float greenEnd)
     {
         float elapsed = 0.0f;
         float duration = 0.75f;
         float redStart = redTurnFader.alpha;
         float blueStart = blueTurnFader.alpha;
+        float purpleStart = purpleTurnFader.alpha;
+        float greenStart = greenTurnFader.alpha;
 
         while (elapsed < duration)
         {
@@ -130,6 +138,8 @@ public class UI_Controller : MonoBehaviour
             float t = Mathf.SmoothStep(0, 1, elapsed / duration);
             redTurnFader.alpha = Mathf.Lerp(redStart, redEnd, t);
             blueTurnFader.alpha = Mathf.Lerp(blueStart, blueEnd, t);
+            purpleTurnFader.alpha = Mathf.Lerp(purpleStart, purpleEnd, t);
+            greenTurnFader.alpha = Mathf.Lerp(greenStart, greenEnd, t);
             yield return null;
         }
     }
