@@ -8,6 +8,7 @@ public class GoalVisual : GoalVisualBase
     public GameObject redGoal;
     public GameObject purpleGoal;
     public GameObject greenGoal;
+    public GameObject neutralGoal;
 
     public Sprite blueGoalActive;
     public Sprite redGoalActive;
@@ -64,6 +65,8 @@ public class GoalVisual : GoalVisualBase
 
     public override void SetColor(GameColor color)
     {
+        neutralGoal.SetActive(false);
+
         switch (color) {
             case GameColor.Red:
                 redGoal.SetActive(true);
@@ -76,6 +79,9 @@ public class GoalVisual : GoalVisualBase
                 break;
             case GameColor.Green:
                 greenGoal.SetActive(true);
+                break;
+            case GameColor.Neutral:
+                neutralGoal.SetActive(true);
                 break;
         }
     }
